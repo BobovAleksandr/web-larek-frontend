@@ -1,15 +1,16 @@
-import { Card } from './components/base/Card';
+import { Card } from './components/Card';
 import { EventEmitter, IEvents } from './components/base/events';
-import { IApi, IProduct, Product } from './types';
+import { IApi, Product } from './types';
 import { Api } from './components/base/api';
 import { API_URL, settings } from './utils/constants';
 import { AppApi } from './components/base/AppApi';
+import { elements } from './utils/constants';
+import { CardsContainer } from './components/CardsContainer';
 import './scss/styles.scss';
 
 const modalContent = document.querySelector('.modal__content')
 const gallery = document.querySelector('.gallery')
-const cardPreviewTemplate: HTMLTemplateElement = document.querySelector('#card-preview')
-const cardCatalogTemplate: HTMLTemplateElement = document.querySelector('#card-catalog')
+
 
 const events: IEvents = new EventEmitter();
 
@@ -25,8 +26,12 @@ const testCard: Product = {
   price: 750
 }
 
-const cardElement = new Card(cardPreviewTemplate, events)
-const cardObj = new Product(testCard)
-cardElement.setData(cardObj)
+const newContainer = new CardsContainer(elements.gallery)
 
-gallery.append(cardElement.render())
+
+
+events.on('basketIcon:changed', () => {
+  console.log('a')
+})
+
+

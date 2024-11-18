@@ -1,0 +1,22 @@
+import { IEvents } from "./base/events";
+
+export class BasketIcon {
+  protected basketButton: HTMLButtonElement;
+  protected basketCounter: HTMLSpanElement | null;
+  protected events: IEvents;
+
+  constructor(basketButton: HTMLButtonElement, events: IEvents) {
+    this.events = events;
+    this.basketButton = basketButton;
+    this.basketCounter = this.basketButton.querySelector('.header__basket-counter')
+
+    this.basketButton.addEventListener('click', () => {
+      this.events.emit('basketIcon:changed')
+    })
+  }
+
+  set newCount(count: string) {
+    if (this.basketCounter) { this.basketCounter.textContent = count }
+  }
+}
+

@@ -1,3 +1,5 @@
+import { IEvents } from "../components/base/events";
+
 type Category = 'софт-скил' | 'другое' | 'дополнительное' | 'кнопка' | 'хард-скил'
 
 export interface IProduct {
@@ -30,6 +32,7 @@ export class Product implements IProduct {
 export interface IProductList {
   products: IProduct[];
   selectedProduct: string | null;
+  totalPrice: number;
   setItems(items: IProduct[]): void;
   getProduct(id: string): IProduct;
 }
@@ -39,14 +42,16 @@ export interface IBasket {
   add(id: string): void;
   remove(id: string): void;
   clear(): void;
-  makeOrder(): IOrder;
+  createOrder(): IOrder;
 }
+
+// TODO слушатели при событиях
 
 export class Basket {
   products: IProduct[];
 
-  constructor() {
-    this.products = []
+  constructor(products: IProduct[]) {
+    this.products = products
   }
 
   add(newProduct: IProduct) {
@@ -63,7 +68,11 @@ export class Basket {
     this.products.length = 0
   }
 
-  makeOrder() {
+  get totalPrice() {
+    return this.products.reduce((sum, el) => sum + el.price, 0)
+  }
+
+  createOrder() {
     return this.products
   }
 }
@@ -80,19 +89,36 @@ export interface IOrder {
 
 export class Order implements IOrder {
   products: IProduct[];
-  paymentMethod: Payment;
-  shippingAdress: string;
-  email: string;
-  phone: string;
 
   constructor(orderObject: IOrder) {
     this.products = orderObject.products
-    this.paymentMethod = orderObject.paymentMethod
-    this.shippingAdress = orderObject.shippingAdress
-    this.email = orderObject.email
-    this.phone = orderObject.phone
   }
 
+  set paymentMethod(paymentInputValue: Payment) {
+    this.paymentMethod = paymentInputValue
+  }
+
+  set email(emailInputValue: string) {
+    this.email = emailInputValue
+  }
+
+  set phone(phoneInputValue: string) {
+    this.phone = phoneInputValue
+  }
+
+  set shippingAdress(shippingAdressInputValue: string) {
+    this.shippingAdress = shippingAdressInputValue
+  }
+
+  get newOrder(): IOrder {
+    return {
+      products: this.products,
+      paymentMethod: this.paymentMethod,
+      shippingAdress: this.shippingAdress,
+      email: this.email,
+      phone: this.phone,
+    }
+  }
 }
 
 export type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';

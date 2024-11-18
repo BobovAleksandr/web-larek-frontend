@@ -1,8 +1,8 @@
-import { IProduct } from "../../types";
-import { cloneTemplate } from "../../utils/utils";
-import { IEvents } from "./events";
+import { IProduct } from "../types";
+import { IEvents } from "./base/events";
+import { Component } from "./base/baseComponent";
 
-enum Category {
+enum CategorySelectors {
   'софт-скил' = 'soft',
   'другое' = 'other',
   'дополнительное' = 'additional',
@@ -10,13 +10,14 @@ enum Category {
   'хард-скил' = 'hard',
 }
 
-export class Card {
+const currency = ' синапсов'
+
+export class Card extends Component {
   protected element: HTMLElement | HTMLButtonElement;
-  protected events: IEvents;
   protected title: HTMLElement;
-  protected category: HTMLElement | undefined;
-  protected description: HTMLElement | undefined;
-  protected price: HTMLElement;
+  protected category: HTMLSpanElement | undefined;
+  protected description: HTMLParagraphElement | undefined;
+  protected price: HTMLSpanElement;
   protected image: HTMLImageElement | undefined;
   protected buyButton: HTMLButtonElement | undefined;
   protected deleteButton: HTMLButtonElement | undefined;
@@ -24,9 +25,8 @@ export class Card {
   protected currency: string;
 
   constructor(template: HTMLTemplateElement, events: IEvents) {
-    this.events = events;
-    this.element = cloneTemplate(template);
-    this.currency = ' синапсов'
+    super(template, events)
+    this.currency = currency;
     this.title = this.element.querySelector('.card__title')
     this.buyButton = this.element.querySelector('.card__button');
     this.category = this.element.querySelector('.card__category')
@@ -34,7 +34,7 @@ export class Card {
     this.price = this.element.querySelector('.card__price')
     this.image = this.element.querySelector('.card__image')
     
-    if (this instanceof HTMLButtonElement ) {
+    if (this instanceof HTMLButtonElement) {
       this.element.addEventListener('click', () => {
         this.events.emit('card:open', { card: this })
       })
@@ -53,20 +53,7 @@ export class Card {
     }
   }
 
-  setData(cardData: IProduct): void {
-    this.cardId = cardData.id;
-    this.category.textContent = cardData.category;
-    this.title.textContent = cardData.title;
-    this.price.textContent = cardData.price + this.currency;
-    if (this.description) { this.description.textContent = cardData.description }
-    if (this.category) { this.category.classList.add(`card__category_${Category[cardData.category]}`) }
-    if (this.image) {
-      this.image.src = cardData.image;
-      this.image.alt = cardData.title;
-    }
-  }
-
-  get id() {
+  get id()  {
     return this.cardId;
   }
 
@@ -75,8 +62,17 @@ export class Card {
     this.element = null;
   }
 
-  render() {
-    return this.element;
+  render(cardData: IProduct): HTMLElement {
+    this.cardId = cardData.id;
+    this.category.textContent = cardData.category;
+    this.title.textContent = cardData.title;
+    this.price.textContent = cardData.price + this.currency;
+    if (this.description) { this.description.textContent = cardData.description }
+    if (this.category) { this.category.classList.add(`card__category_${CategorySelectors[cardData.category]}`) }
+    if (this.image) {
+      this.image.src = cardData.image;
+      this.image.alt = cardData.title;
+    }
+    return this.element
   }
-
 }
