@@ -1,8 +1,8 @@
 import { IEvents } from "./events";
 import { cloneTemplate } from "../../utils/utils";
 
-export abstract class Component {
-  protected element: HTMLElement;
+export abstract class BaseComponent {
+  protected element: HTMLElement | HTMLFormElement;
   protected events: IEvents;
   
   constructor(template: HTMLTemplateElement, events: IEvents) {

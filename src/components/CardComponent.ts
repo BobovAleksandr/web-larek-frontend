@@ -1,6 +1,6 @@
 import { IProduct } from "../types";
 import { IEvents } from "./base/events";
-import { Component } from "./base/baseComponent";
+import { BaseComponent } from "./base/baseComponent";
 
 enum CategorySelectors {
   'софт-скил' = 'soft',
@@ -12,7 +12,7 @@ enum CategorySelectors {
 
 const currency = ' синапсов'
 
-export class Card extends Component {
+export class CardComponent extends BaseComponent {
   protected element: HTMLElement | HTMLButtonElement;
   protected title: HTMLElement;
   protected category: HTMLSpanElement | undefined;

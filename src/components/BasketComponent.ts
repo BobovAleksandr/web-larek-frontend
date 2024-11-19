@@ -1,14 +1,14 @@
 import { IProduct } from "../types";
 import { IEvents } from "./base/events";
-import { Card } from "./Card"
-import { Component } from "./base/baseComponent";
+import { CardComponent } from "./CardComponent"
+import { BaseComponent } from "./base/baseComponent";
 
-export class Basket extends Component {
+export class BasketComponent extends BaseComponent {
   protected productListContainer: HTMLElement;
   protected buttonBuy: HTMLButtonElement;
   protected price: HTMLElement;
   protected title: HTMLElement;
-  protected basketProducts: Card[];
+  protected basketProducts: CardComponent[];
 
   constructor(template: HTMLTemplateElement, events: IEvents) {
     super(template, events)
@@ -25,7 +25,7 @@ export class Basket extends Component {
    
   render(products: IProduct[], template: HTMLTemplateElement) {
     products.forEach(product => {
-      const newBasketCard = new Card(template, this.events)
+      const newBasketCard = new CardComponent(template, this.events)
       newBasketCard.render(product)
       this.basketProducts.push(newBasketCard)
     })

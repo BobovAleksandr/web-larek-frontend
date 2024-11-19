@@ -1,12 +1,15 @@
-import { Card } from './components/Card';
+import { CardComponent } from './components/CardComponent';
 import { EventEmitter, IEvents } from './components/base/events';
-import { IApi, Product } from './types';
+import { IApi, Order, Product } from './types';
 import { Api } from './components/base/api';
 import { API_URL, settings } from './utils/constants';
-import { AppApi } from './components/base/AppApi';
+import { AppApi } from './components/base/appApi';
 import { elements } from './utils/constants';
 import { CardsContainer } from './components/CardsContainer';
 import './scss/styles.scss';
+import { ModalComponent } from './components/base/ModalComponent';
+import { SuccessComponent } from './components/SuccessComponent';
+import { OrderComponent } from './components/OrderComponent';
 
 const modalContent = document.querySelector('.modal__content')
 const gallery = document.querySelector('.gallery')
@@ -35,3 +38,8 @@ events.on('basketIcon:changed', () => {
 })
 
 
+
+const modal = new ModalComponent(elements.modal, events)
+const form = new OrderComponent(elements.orderTemplate, events)
+modal.modalContent.append(form.render())
+modal.open()

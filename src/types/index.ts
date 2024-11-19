@@ -11,41 +11,24 @@ export interface IProduct {
   price: number;
 }
 
-export class Product implements IProduct {
-  id: string;
-  title: string;
-  category: Category;
-  description: string;
-  image: string;
-  price: number;
+export class ProductList {
+  products: IProduct[];
+  _selectedProduct: IProduct | null;
 
-  constructor(productObject: IProduct) {
-    this.id = productObject.id;
-    this.title = productObject.title;
-    this.category = productObject.category;
-    this.description = productObject.description;
-    this.image = productObject.image;
-    this.price = productObject.price;
+  constructor(products: IProduct[]) {
+    this.products = products;
+    this._selectedProduct = null
   }
-}
+  
+  set selectedProduct(id: string) {
+    this._selectedProduct = this.products.find(product => product.id === id)
+  }
 
-export interface IProductList {
-  products: IProduct[];
-  selectedProduct: string | null;
-  totalPrice: number;
-  setItems(items: IProduct[]): void;
-  getProduct(id: string): IProduct;
-}
+  get selectedProduct(): IProduct {
+    return this._selectedProduct
+  };
 
-export interface IBasket {
-  products: IProduct[];
-  add(id: string): void;
-  remove(id: string): void;
-  clear(): void;
-  createOrder(): IOrder;
 }
-
-// TODO слушатели при событиях
 
 export class Basket {
   products: IProduct[];
@@ -79,19 +62,19 @@ export class Basket {
 
 type Payment = 'Онлайн' | 'При получении'
 
-export interface IOrder {
+interface IOrder {
   products: IProduct[];
-  paymentMethod: Payment;
-  shippingAdress: string;
+  paymentMethod: string;
   email: string;
   phone: string;
+  shippingAdress: string;
 }
 
-export class Order implements IOrder {
+export class Order {
   products: IProduct[];
 
-  constructor(orderObject: IOrder) {
-    this.products = orderObject.products
+  constructor(products: IProduct[]) {
+    this.products = products
   }
 
   set paymentMethod(paymentInputValue: Payment) {
@@ -128,8 +111,6 @@ export interface IApi {
   get<T>(url: string): Promise<T>;
   post<T>(orl: string, data: object, method?: ApiPostMethods): Promise<T>;
 }
-
-
 
 
 

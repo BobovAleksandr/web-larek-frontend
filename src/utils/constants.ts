@@ -28,5 +28,5 @@ export const elements: IElements = {
   contactsTemplate: document.querySelector('#contacts'),
   basketButton: document.querySelector('.header__basket'),
   gallery: document.querySelector('.gallery'),
-  modal: document.querySelector('.modal__content')
+  modal: document.querySelector('.modal')
 }

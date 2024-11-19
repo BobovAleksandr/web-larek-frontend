@@ -1,7 +1,7 @@
 import { IEvents } from "./base/events";
-import { Component } from "./base/baseComponent";
+import { BaseComponent } from "./base/baseComponent";
 
-export class Success extends Component {
+export class SuccessComponent extends BaseComponent {
   protected title: HTMLElement;
   protected description: HTMLParagraphElement;
   protected buttonClose: HTMLButtonElement;

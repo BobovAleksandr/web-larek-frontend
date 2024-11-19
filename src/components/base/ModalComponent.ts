@@ -1,11 +1,11 @@
 import { IEvents } from "./events";
 
-export class Modal {
+export class ModalComponent {
   protected modal: HTMLDivElement;
-  protected modalContent: HTMLDivElement;
   protected buttonClose: HTMLButtonElement;
   protected events: IEvents;
-
+  modalContent: HTMLDivElement;
+  
   constructor(modal: HTMLDivElement, events: IEvents) {
     this.modal = modal;
     this.events = events;
@@ -29,9 +29,13 @@ export class Modal {
     document.removeEventListener('keyup', this.handleEscUp);
   }
   
-  handleEscUp (evt: KeyboardEvent) {
+  protected handleEscUp (evt: KeyboardEvent) {
     if (evt.key === 'Escape') {
       this.close();
     }
+  }
+
+  render() {
+    return this.modal
   }
 }
