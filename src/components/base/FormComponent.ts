@@ -18,12 +18,12 @@ export class FormComponent extends BaseComponent {
 
     this.inputs.forEach(input => {
       input.addEventListener('input', () => {
-        events.emit(`${input.getAttribute('name')}:change`, { input })
+        events.emit(`${input.name}:change`, { input })
       })
     })
 
     this.form.addEventListener('submit', () => {
-      events.emit('orderForm:submit', { data: this.inputsValues })
+      events.emit(`${this.form.name}:submit`, { data: this.inputsValues })
     })
   }
 

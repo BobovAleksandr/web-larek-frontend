@@ -20,11 +20,13 @@ export class ModalComponent {
   }
 
   open() {
+    this.events.emit('modal:open', { modal: this })
     this.modal.classList.add('modal_active');
     document.addEventListener('keyup', this.handleEscUp);
   }
 
   close() {
+    this.events.emit('modal:close', { modal: this })
     this.modal.classList.remove('modal_active');
     document.removeEventListener('keyup', this.handleEscUp);
   }
