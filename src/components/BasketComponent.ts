@@ -25,7 +25,7 @@ export class BasketComponent extends BaseComponent {
    
   render(products: IProduct[], template: HTMLTemplateElement) {
     products.forEach(product => {
-      const newBasketCard = new CardComponent(template, this.events)
+      const newBasketCard = new CardComponent(template, this.events, product.id)
       newBasketCard.render(product)
       this.basketProducts.push(newBasketCard)
     })

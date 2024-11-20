@@ -1,5 +1,4 @@
-import { elements } from "../utils/constants";
-import { EventEmitter, IEvents } from "./base/events";
+import { IEvents } from "./base/events";
 
 export class BasketIcon {
   protected basketButton: HTMLButtonElement;

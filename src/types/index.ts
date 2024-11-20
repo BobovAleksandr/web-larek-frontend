@@ -1,5 +1,3 @@
-import { IEvents } from "../components/base/events";
-
 type Category = 'софт-скил' | 'другое' | 'дополнительное' | 'кнопка' | 'хард-скил'
 
 export interface IProduct {
@@ -11,21 +9,27 @@ export interface IProduct {
   price: number;
 }
 
-export class ProductList {
+// TODO Добавить в readme интерфейс
+export interface IProductList {
   products: IProduct[];
-  _selectedProduct: IProduct | null;
+  selectedProduct: string;
+  getSelectedProduct(): IProduct;
+}
+
+export class ProductList implements IProductList {
+  products: IProduct[];
+  protected currentProduct: IProduct | null;
 
   constructor(products: IProduct[]) {
     this.products = products;
-    this._selectedProduct = null
   }
   
   set selectedProduct(id: string) {
-    this._selectedProduct = this.products.find(product => product.id === id)
+    this.currentProduct = this.products.find(product => product.id === id)
   }
 
-  get selectedProduct(): IProduct {
-    return this._selectedProduct
+  getSelectedProduct(): IProduct {
+    return this.currentProduct
   };
 
 }

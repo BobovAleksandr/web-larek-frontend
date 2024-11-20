@@ -24,8 +24,9 @@ export class CardComponent extends BaseComponent {
   protected cardId: string;
   protected currency: string;
 
-  constructor(template: HTMLTemplateElement, events: IEvents) {
+  constructor(template: HTMLTemplateElement, events: IEvents, id: string) {
     super(template, events)
+    this.cardId = id;
     this.currency = currency;
     this.title = this.element.querySelector('.card__title')
     this.buyButton = this.element.querySelector('.card__button');
@@ -33,10 +34,11 @@ export class CardComponent extends BaseComponent {
     this.description = this.element.querySelector('.card__text')
     this.price = this.element.querySelector('.card__price')
     this.image = this.element.querySelector('.card__image')
+
     
-    if (this instanceof HTMLButtonElement) {
+    if (this.element instanceof HTMLButtonElement) {
       this.element.addEventListener('click', () => {
-        this.events.emit('card:open', { card: this })
+        this.events.emit('card:open', { cardId: this.cardId })
       })
     }
     
@@ -53,26 +55,23 @@ export class CardComponent extends BaseComponent {
     }
   }
 
-  get id()  {
-    return this.cardId;
-  }
-
   deleteCard() {
     this.element.remove();
     this.element = null;
   }
 
   render(cardData: IProduct): HTMLElement {
-    this.cardId = cardData.id;
     this.category.textContent = cardData.category;
     this.title.textContent = cardData.title;
     this.price.textContent = cardData.price + this.currency;
     if (this.description) { this.description.textContent = cardData.description }
     if (this.category) { this.category.classList.add(`card__category_${CategorySelectors[cardData.category]}`) }
     if (this.image) {
-      this.image.src = cardData.image;
+      this.image.src = `./../images/cards/Leaf.svg`;
       this.image.alt = cardData.title;
     }
     return this.element
   }
 }
+
+// TODO поправить описание класса
