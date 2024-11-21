@@ -15,13 +15,12 @@ export class BasketIcon {
       this.events.emit('basket:open')
     })
   }
-
-  set newCount(count: string) {
-    this.basketCounter.textContent = count
-  }
-
-  render() {
+ 
+  render(count: number) {
+    this.basketCounter.textContent = count.toString()
     return this.basketButton
   }
 }
+
+// TODO - переписать класс
 

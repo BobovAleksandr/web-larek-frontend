@@ -28,18 +28,19 @@ export class ModalComponent {
   close() {
     this.events.emit('modal:close', { modal: this })
     this.modal.classList.remove('modal_active');
-    console.log('close')
     document.removeEventListener('keyup', () => this.handleEscUp);
   }
   
   protected handleEscUp (evt: KeyboardEvent) {
     if (evt.key === 'Escape') {
       this.close();
-      console.log(this)
     }
   }
 
-  render() {
+  render(content: HTMLElement) {
+    this.modalContent.replaceChildren(content)
     return this.modal
   }
 }
+
+// TODO переписать описание в readme

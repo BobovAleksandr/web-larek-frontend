@@ -3,7 +3,16 @@ export const CDN_URL = `${process.env.API_ORIGIN}/content/weblarek`;
 
 export const settings = {
   productUri: '/product',
+  currency: ' синапсов'
 };
+
+export enum CategorySelectors {
+  'софт-скил' = 'soft',
+  'другое' = 'other',
+  'дополнительное' = 'additional',
+  'кнопка' = 'button',
+  'хард-скил' = 'hard',
+}
 
 interface IElements {
   cardCatalogTemplate: HTMLTemplateElement,
@@ -13,7 +22,7 @@ interface IElements {
   basketTemplate: HTMLTemplateElement,
   orderTemplate: HTMLTemplateElement,
   contactsTemplate: HTMLTemplateElement,
-  basketButton: HTMLButtonElement;
+  basketIcon: HTMLButtonElement;
   gallery: HTMLElement,
   modal: HTMLDivElement,
 }
@@ -26,7 +35,7 @@ export const elements: IElements = {
   basketTemplate: document.querySelector('#basket'),
   orderTemplate: document.querySelector('#order'),
   contactsTemplate: document.querySelector('#contacts'),
-  basketButton: document.querySelector('.header__basket'),
+  basketIcon: document.querySelector('.header__basket'),
   gallery: document.querySelector('.gallery'),
   modal: document.querySelector('.modal')
 }

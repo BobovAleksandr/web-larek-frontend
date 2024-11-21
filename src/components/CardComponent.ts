@@ -1,16 +1,9 @@
 import { IProduct } from "../types";
 import { IEvents } from "./base/events";
 import { BaseComponent } from "./base/baseComponent";
+import { settings, CategorySelectors } from "../utils/constants";
 
-enum CategorySelectors {
-  'софт-скил' = 'soft',
-  'другое' = 'other',
-  'дополнительное' = 'additional',
-  'кнопка' = 'button',
-  'хард-скил' = 'hard',
-}
 
-const currency = ' синапсов'
 
 export class CardComponent extends BaseComponent {
   protected element: HTMLElement | HTMLButtonElement;
@@ -19,40 +12,43 @@ export class CardComponent extends BaseComponent {
   protected description: HTMLParagraphElement | undefined;
   protected price: HTMLSpanElement;
   protected image: HTMLImageElement | undefined;
-  protected buyButton: HTMLButtonElement | undefined;
-  protected deleteButton: HTMLButtonElement | undefined;
+  protected button: HTMLButtonElement | undefined;
   protected cardId: string;
   protected currency: string;
 
-  constructor(template: HTMLTemplateElement, events: IEvents, id: string) {
-    super(template, events)
-    this.cardId = id;
-    this.currency = currency;
-    this.title = this.element.querySelector('.card__title')
-    this.buyButton = this.element.querySelector('.card__button');
-    this.category = this.element.querySelector('.card__category')
-    this.description = this.element.querySelector('.card__text')
-    this.price = this.element.querySelector('.card__price')
-    this.image = this.element.querySelector('.card__image')
-
+  constructor(template: HTMLTemplateElement, events: IEvents) {
+    super(template, events);
+    this.currency = settings.currency;
+    this.title = this.element.querySelector('.card__title');
+    this.button = this.element.querySelector('.card__button');
+    this.category = this.element.querySelector('.card__category');
+    this.description = this.element.querySelector('.card__text');
+    this.price = this.element.querySelector('.card__price');
+    this.image = this.element.querySelector('.card__image');
     
     if (this.element instanceof HTMLButtonElement) {
       this.element.addEventListener('click', () => {
-        this.events.emit('card:open', { cardId: this.cardId })
+        this.events.emit('card:open', this);
       })
     }
     
-    if (this.buyButton) {
-      this.buyButton.addEventListener('click', () => {
-        this.events.emit('card:addToBasket', { card: this })
+    if (this.button) {
+      this.button.addEventListener('click', () => {
+        this.events.emit('card:changeBasket', this);
       })
     }
+  }
 
-    if (this.deleteButton) {
-      this.deleteButton.addEventListener('click', () => {
-        this.events.emit('card:removeFromBasket', { card: this })
-      })
-    }
+  get isBasketCard():boolean {
+    return this.element.classList.contains('card_compact')
+  }
+
+  get id() {
+    return this.cardId
+  }
+
+  changeButtonText(basketProducts: IProduct[]) {
+    this.button.textContent = basketProducts.some(product => product.id === this.id) ? 'Убрать из корзины' : 'В корзину'
   }
 
   deleteCard() {
@@ -60,18 +56,22 @@ export class CardComponent extends BaseComponent {
     this.element = null;
   }
 
-  render(cardData: IProduct): HTMLElement {
-    this.category.textContent = cardData.category;
-    this.title.textContent = cardData.title;
-    this.price.textContent = cardData.price + this.currency;
-    if (this.description) { this.description.textContent = cardData.description }
-    if (this.category) { this.category.classList.add(`card__category_${CategorySelectors[cardData.category]}`) }
+  render(product: IProduct): HTMLElement {
+    this.cardId = product.id
+    this.price.textContent = (product.price ?? '0') + this.currency;
+    this.title.textContent = product.title;
+    if (this.category) {this.category.textContent = product.category};
+    if (this.category) { this.category.classList.add(`card__category_${CategorySelectors[product.category]}`) }
+    if (this.description) { this.description.textContent = product.description }
     if (this.image) {
-      this.image.src = `./../images/cards/Leaf.svg`;
-      this.image.alt = cardData.title;
+      // this.image.src = `${cardData.image}`;
+      this.image.alt = product.title;
     }
+    if (this.button && product.price === null) { this.button.disabled = true }
     return this.element
   }
 }
+
+// TODO - загрузка картинок - https://larek-api.nomoreparties.co/content/weblarek/Shell.svg
 
 // TODO поправить описание класса

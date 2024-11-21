@@ -34,35 +34,42 @@ export class ProductList implements IProductList {
 
 }
 
-export class Basket {
+export interface IBasket {
+  changeProducts(newProduct: IProduct): void;
+  clear(): void;
+  totalPrice: string;
   products: IProduct[];
+}
 
-  constructor(products: IProduct[]) {
-    this.products = products
+export class Basket implements IBasket {
+  protected _products: IProduct[];
+
+  constructor() {
+    this._products = []
   }
 
-  add(newProduct: IProduct) {
-    if (this.products.find(product => product.id === newProduct.id) === undefined) {
-      this.products.push(newProduct)
+  changeProducts(newProduct: IProduct) {
+    if (this._products.find(product => product.id === newProduct.id)) {
+      this._products = this._products.filter(product => product.id !== newProduct.id)
+    } else {
+      this._products.push(newProduct)
     }
   }
 
-  remove(id: string) {
-    this.products = this.products.filter(product => product.id !== id)
-  }
-
   clear() {
-    this.products.length = 0
+    this._products.length = 0
   }
 
   get totalPrice() {
-    return this.products.reduce((sum, el) => sum + el.price, 0)
+    return String(this._products.reduce((sum, el) => sum + el.price, 0))
   }
 
-  createOrder() {
-    return this.products
+  get products() {
+    return this._products
   }
 }
+
+// TODO поправить описание basket
 
 type Payment = 'Онлайн' | 'При получении'
 
