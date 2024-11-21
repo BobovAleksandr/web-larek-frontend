@@ -27,7 +27,7 @@ interface IElements {
   modal: HTMLDivElement,
 }
 
-export const elements: IElements = {
+export const domElements: IElements = {
   cardCatalogTemplate: document.querySelector('#card-catalog'),
   cardPreviewTemplate: document.querySelector('#card-preview'),
   cardBasketTemplate: document.querySelector('#card-basket'),

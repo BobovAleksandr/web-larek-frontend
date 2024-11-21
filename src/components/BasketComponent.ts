@@ -27,7 +27,7 @@ export class BasketComponent extends BaseComponent {
   
   render(basket: IBasket, template: HTMLTemplateElement) {
     basket.products.forEach(product => {
-      const newBasketCard = new CardComponent(template, this.events).render(product)
+      const newBasketCard = new CardComponent(template, this.events, product).render()
       this.productListContainer.append(newBasketCard)
       this.price.textContent = basket.totalPrice + settings.currency
       if (basket.totalPrice !== '0') { this.buttonBuy.disabled = false }

@@ -11,10 +11,6 @@ export class AppApi {
   getData(uri: string) {
     return this._baseApi.get(uri)
   }
-
-  getCardById(uri: string, id: string) {
-    return this._baseApi.get(`${uri}/${id}`)
-  }
 }
 
 
