@@ -1,7 +1,7 @@
-import { BaseComponent } from "./baseComponent";
+import { Component } from "./NEW_Component";
 import { IEvents } from "./events";
 
-export class FormComponent extends BaseComponent {
+export class FormComponent extends Component {
   protected form: HTMLFormElement;
   protected title: HTMLHeadElement;
   protected buttonSubmit: HTMLButtonElement;
@@ -10,11 +10,11 @@ export class FormComponent extends BaseComponent {
 
   constructor(template: HTMLTemplateElement, events: IEvents) {
     super(template, events)
-    this.form = this.element as HTMLFormElement
-    this.title = this.element.querySelector('.modal__title')
-    this.buttonSubmit = this.element.querySelector('button[type="submit"]')
-    this.errorContainer = this.element.querySelector('.form__errors')
-    this.inputs = this.element.querySelectorAll('.form__input')
+    this.form = this.container as HTMLFormElement
+    this.title = this.container.querySelector('.modal__title')
+    this.buttonSubmit = this.container.querySelector('button[type="submit"]')
+    this.errorContainer = this.container.querySelector('.form__errors')
+    this.inputs = this.container.querySelectorAll('.form__input')
 
     this.inputs.forEach(input => {
       input.addEventListener('input', () => {

@@ -4,7 +4,7 @@ export class ModalComponent {
   protected modal: HTMLElement;
   protected buttonClose: HTMLButtonElement;
   protected events: IEvents;
-  modalContent: HTMLElement | null;
+  protected modalContent: HTMLElement | null;
   
   constructor(modal: HTMLElement, events: IEvents) {
     this.modal = modal;

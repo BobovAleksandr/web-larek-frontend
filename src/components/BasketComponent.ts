@@ -1,10 +1,10 @@
 import { IBasket, IProduct } from "../types";
 import { IEvents } from "./base/events";
 import { CardComponent } from "./CardComponent"
-import { BaseComponent } from "./base/baseComponent";
+import { Component } from "./base/NEW_Component";
 import { settings } from "../utils/constants";
 
-export class BasketComponent extends BaseComponent {
+export class BasketComponent extends Component {
   protected productListContainer: HTMLElement;
   protected buttonBuy: HTMLButtonElement;
   protected price: HTMLElement;
@@ -13,11 +13,11 @@ export class BasketComponent extends BaseComponent {
 
   constructor(template: HTMLTemplateElement, events: IEvents) {
     super(template, events)
-    this.title = this.element.querySelector('.modal__title')
-    this.productListContainer = this.element.querySelector('.basket__list')
-    this.buttonBuy = this.element.querySelector('.basket__button')
+    this.title = this.container.querySelector('.modal__title')
+    this.productListContainer = this.container.querySelector('.basket__list')
+    this.buttonBuy = this.container.querySelector('.basket__button')
     this.buttonBuy.disabled = true;
-    this.price = this.element.querySelector('.basket__price')
+    this.price = this.container.querySelector('.basket__price')
     this.basketProducts = []
 
     this.buttonBuy.addEventListener('click', () => {
@@ -32,7 +32,7 @@ export class BasketComponent extends BaseComponent {
       this.price.textContent = basket.totalPrice + settings.currency
       if (basket.totalPrice !== '0') { this.buttonBuy.disabled = false }
     })
-    return this.element
+    return this.container
   }
 }
 

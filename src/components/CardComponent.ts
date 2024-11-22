@@ -1,10 +1,10 @@
 import { IProduct } from "../types";
 import { IEvents } from "./base/events";
-import { BaseComponent } from "./base/baseComponent";
+import { Component } from "./base/NEW_Component";
 import { settings, CategorySelectors } from "../utils/constants";
 
-export class CardComponent extends BaseComponent {
-  protected element: HTMLElement | HTMLButtonElement;
+export class CardComponent extends Component {
+  protected container: HTMLElement | HTMLButtonElement;
   protected title: HTMLElement;
   protected category: HTMLSpanElement | undefined;
   protected description: HTMLParagraphElement | undefined;
@@ -19,16 +19,16 @@ export class CardComponent extends BaseComponent {
     super(template, events);
     this._product = product;
     this.currency = settings.currency;
-    this.title = this.element.querySelector('.card__title');
-    this.button = this.element.querySelector('.card__button');
-    this.category = this.element.querySelector('.card__category');
-    this.description = this.element.querySelector('.card__text');
-    this.basketIndex = this.element.querySelector('.basket__item-index')
-    this.price = this.element.querySelector('.card__price');
-    this.image = this.element.querySelector('.card__image');
+    this.title = this.container.querySelector('.card__title');
+    this.button = this.container.querySelector('.card__button');
+    this.category = this.container.querySelector('.card__category');
+    this.description = this.container.querySelector('.card__text');
+    this.basketIndex = this.container.querySelector('.basket__item-index')
+    this.price = this.container.querySelector('.card__price');
+    this.image = this.container.querySelector('.card__image');
     
-    if (this.element instanceof HTMLButtonElement) {
-      this.element.addEventListener('click', () => {
+    if (this.container instanceof HTMLButtonElement) {
+      this.container.addEventListener('click', () => {
         this.events.emit('card:open', this);
       })
     }
@@ -45,7 +45,7 @@ export class CardComponent extends BaseComponent {
   }
 
   get isBasketCard():boolean {
-    return this.element.classList.contains('card_compact')
+    return this.container.classList.contains('card_compact')
   }
 
   // changeButtonText(basketProducts: IProduct[]) {
@@ -53,8 +53,8 @@ export class CardComponent extends BaseComponent {
   // }
 
   deleteCard() {
-    this.element.remove();
-    this.element = null;
+    this.container.remove();
+    this.container = null;
   }
 
   render(): HTMLElement {
@@ -69,7 +69,7 @@ export class CardComponent extends BaseComponent {
       this.image.alt = this.product.title;
     }
     if (this.button && this.product.price === null) { this.button.disabled = true }
-    return this.element
+    return this.container
   }
 }
 

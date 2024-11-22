@@ -14,7 +14,7 @@ export enum CategorySelectors {
   'хард-скил' = 'hard',
 }
 
-interface IElements {
+interface ITemplates {
   cardCatalogTemplate: HTMLTemplateElement,
   cardPreviewTemplate: HTMLTemplateElement;
   cardBasketTemplate: HTMLTemplateElement,
@@ -22,12 +22,9 @@ interface IElements {
   basketTemplate: HTMLTemplateElement,
   orderTemplate: HTMLTemplateElement,
   contactsTemplate: HTMLTemplateElement,
-  basketIcon: HTMLButtonElement;
-  gallery: HTMLElement,
-  modal: HTMLDivElement,
 }
 
-export const domElements: IElements = {
+export const templates: ITemplates = {
   cardCatalogTemplate: document.querySelector('#card-catalog'),
   cardPreviewTemplate: document.querySelector('#card-preview'),
   cardBasketTemplate: document.querySelector('#card-basket'),
@@ -35,7 +32,4 @@ export const domElements: IElements = {
   basketTemplate: document.querySelector('#basket'),
   orderTemplate: document.querySelector('#order'),
   contactsTemplate: document.querySelector('#contacts'),
-  basketIcon: document.querySelector('.header__basket'),
-  gallery: document.querySelector('.gallery'),
-  modal: document.querySelector('.modal')
 }

@@ -7,7 +7,7 @@ export class OrderComponent extends FormComponent {
 
   constructor(template: HTMLTemplateElement, events: IEvents) {
     super(template, events)
-    this.buttonsPayment = this.element.querySelectorAll('.order__buttons')
+    this.buttonsPayment = this.container.querySelectorAll('.order__buttons')
     this._paymentMethod = null;
 
     this.buttonsPayment.forEach((button) => {

@@ -1,6 +1,6 @@
 import './scss/styles.scss';
 import { Api } from './components/base/api';
-import { API_URL, domElements, settings } from './utils/constants';
+import { API_URL, templates, settings } from './utils/constants';
 import { AppApi } from './components/base/appApi';
 import { Basket, IProduct, IProductList, ProductList } from './types';
 import { ApiListResponse } from './components/base/api';
@@ -17,8 +17,8 @@ const appApi = new AppApi(api)
 
 const basket = new Basket()
 
-const modal = new ModalComponent(domElements.modal, events)
-const basketIcon = new BasketIcon(domElements.basketIcon, events)
+const modal = new ModalComponent(templates.modal, events)
+const basketIcon = new BasketIcon(templates.basketIcon, events)
 
 const productList = new ProductList(events)
 
@@ -33,14 +33,14 @@ appApi.getData(settings.productUri)
 // Отрисовать карточки на странице
 events.on('productList:changed', (products: IProduct[]) => {
   products.forEach(product => {
-    const newCard = new CardComponent(domElements.cardCatalogTemplate, events, product).render()
-    domElements.gallery.append(newCard)
+    const newCard = new CardComponent(templates.cardCatalogTemplate, events, product).render()
+    templates.gallery.append(newCard)
   })
 })
 
 // Открытие карточки товара
 events.on('card:open', (card: CardComponent) => {
-  modal.render(new CardComponent(domElements.cardPreviewTemplate, events, card.product).render());
+  modal.render(new CardComponent(templates.cardPreviewTemplate, events, card.product).render());
   modal.open();
 })
 
