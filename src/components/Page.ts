@@ -19,6 +19,7 @@ export class Page extends Component implements IPage {
     this._cardsGallery = ensureElement<HTMLElement>('.gallery')
 
     this._basketButton.addEventListener('click', () => {
+      this.events.emit('basket:changed')
       this.events.emit('basket:open')
     })
   }

@@ -28,7 +28,7 @@ export interface IOrder {
   phone: string;
   adress: string;
   total: number;
-  items: string[];
+  items: IProduct[];
 }
 
 export type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';

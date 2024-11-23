@@ -31,13 +31,14 @@ export abstract class Component {
     }
   }   
 
-  // render(): HTMLElement {
-  //   return this.container
-  // }
+  render(): HTMLElement {
+    return this.container
+  }
 
   cloneTemplate(template: HTMLTemplateElement) {
     return cloneTemplate(template)
   }
+
 }
 
 

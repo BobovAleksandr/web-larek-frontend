@@ -2,7 +2,7 @@ import { IProduct, IOrder } from "../types";
 import { IEvents } from "./base/events";
 
 export class AppState {
-  protected _basket: string[] = [];
+  protected _basket: IProduct[] = [];
   products: IProduct[] = [];
   order: IOrder = {
     payment: null,
@@ -18,11 +18,11 @@ export class AppState {
   }
 
   toggleBasketProduct(product: IProduct) {
-    const isProductinBasket: boolean = this._basket.includes(product.id)
+    const isProductinBasket: boolean = this._basket.includes(product)
     if (isProductinBasket) {
-      this._basket = this._basket.filter(item => item !== product.id)
+      this._basket = this._basket.filter(item => item !== product)
     } else {
-      this._basket.push(product.id)
+      this._basket.push(product)
     }
     this.events.emit('basket:changed', this._basket)
   }
@@ -32,8 +32,8 @@ export class AppState {
     this.events.emit('basket:cleared')
   }
 
-  getTotal(): number {
-    return this.products.reduce((sum, product) => sum + product.price, 0)
+  getBasketTotal(): number {
+    return this._basket.reduce((sum, product) => sum + product.price, 0)
   }
 
   addItemsToOrder() {
@@ -56,5 +56,8 @@ export class AppState {
     this.events.emit('catalog:changed', this.products)
   }
 
+  get basket() {
+    return this._basket
+  }
 
 }

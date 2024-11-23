@@ -29,16 +29,16 @@ export class Modal extends Component implements IModal {
   }
 
   open() {
-      this.container.classList.add('modal_active');
-      this.events.emit('modal:open');
-      document.addEventListener('keyup', this.handleEscUp.bind(this));
+    this.container.classList.add('modal_active');
+    this.events.emit('modal:open');
+    document.addEventListener('keyup', this.handleEscUp.bind(this));
   }
 
   close() {
-      this.container.classList.remove('modal_active');
-      this.content = null;
-      this.events.emit('modal:close');
-      document.removeEventListener('keyup', () => this.handleEscUp);
+    this.container.classList.remove('modal_active');
+    this.content = null;
+    this.events.emit('modal:close');
+    document.removeEventListener('keyup', () => this.handleEscUp);
   }
 
   protected handleEscUp (evt: KeyboardEvent) {
