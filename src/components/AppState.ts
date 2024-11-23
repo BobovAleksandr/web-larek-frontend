@@ -1,8 +1,8 @@
-import { IProduct, IOrder } from "../types/NEW index";
+import { IProduct, IOrder } from "../types";
 import { IEvents } from "./base/events";
 
 export class AppState {
-  basket: string[] = [];
+  protected _basket: string[] = [];
   products: IProduct[] = [];
   order: IOrder = {
     payment: null,
@@ -17,17 +17,18 @@ export class AppState {
     this.events = events
   }
 
-  toggleBasketProduct(id: string) {
-    if (this.basket.includes(id)) {
-      this.basket = this.basket.filter(item => item !== id)
+  toggleBasketProduct(product: IProduct) {
+    const isProductinBasket: boolean = this._basket.includes(product.id)
+    if (isProductinBasket) {
+      this._basket = this._basket.filter(item => item !== product.id)
     } else {
-      this.basket.push(id)
+      this._basket.push(product.id)
     }
-    this.events.emit('basket:changed', this.basket)
+    this.events.emit('basket:changed', this._basket)
   }
 
   clearBasket() {
-    this.basket.length = 0
+    this._basket.length = 0
     this.events.emit('basket:cleared')
   }
 
@@ -36,7 +37,7 @@ export class AppState {
   }
 
   addItemsToOrder() {
-    this.order.items.push(...this.basket)
+    this.order.items.push(...this._basket)
     this.events.emit('order:created', this.order)
   }
 

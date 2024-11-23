@@ -17,6 +17,13 @@ export abstract class Component {
     }
   }
 
+  setImage(element: HTMLImageElement, src: string, alt: string) {
+    if (element) {
+      element.src = String(src);
+      element.alt = String(alt);
+    }
+  }
+
   setDisabled(element: HTMLElement, state: boolean) {
     if (element) {
         if (state) element.setAttribute('disabled', 'disabled');
@@ -24,8 +31,12 @@ export abstract class Component {
     }
   }   
 
-  render(): HTMLElement {
-    return this.container
+  // render(): HTMLElement {
+  //   return this.container
+  // }
+
+  cloneTemplate(template: HTMLTemplateElement) {
+    return cloneTemplate(template)
   }
 }
 

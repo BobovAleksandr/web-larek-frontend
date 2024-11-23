@@ -2,6 +2,8 @@ import { IEvents } from "../components/base/events";
 
 export type Category = 'софт-скил' | 'другое' | 'дополнительное' | 'кнопка' | 'хард-скил'
 
+export type Currency = ' синапсов'
+
 export interface IProduct {
   id: string;
   title: string;

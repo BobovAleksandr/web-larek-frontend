@@ -1,4 +1,5 @@
-import { IApi, IProduct } from '../../types'
+import { IApi } from "../../types/index.js";
+import { IProduct } from "../../types/index.js";
 
 export class AppApi {
   private _baseApi: IApi;
@@ -12,6 +13,3 @@ export class AppApi {
     return this._baseApi.get(uri)
   }
 }
-
-
-// TODO описать класс или поправить описание

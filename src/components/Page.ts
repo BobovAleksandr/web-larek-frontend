@@ -1,17 +1,18 @@
 import { ensureElement } from "../utils/utils";
-import { Component } from "./base/NEW_Component";
+import { Component } from "./base/Component";
+import { IEvents } from "./base/events";
 
 interface IPage {
-  counter: number;
+  basketCounter: number;
 }
 
-class Page extends Component<IPage> {
+export class Page extends Component implements IPage {
   protected _basketButton: HTMLButtonElement;
   protected _basketCounter: HTMLSpanElement;
   protected _cardsGallery: HTMLElement;
 
-  constructor(container: HTMLElement) {
-    super(container)
+  constructor(container: HTMLElement, events: IEvents) {
+    super(container, events)
     
     this._basketButton = ensureElement<HTMLButtonElement>('.header__basket')
     this._basketCounter = ensureElement<HTMLSpanElement>('.header__basket-counter')
@@ -22,11 +23,11 @@ class Page extends Component<IPage> {
     })
   }
 
-  set counter(value: number) {
+  set basketCounter(value: number) {
     this.setText(this._basketCounter, String(value))
   }
 
-  set catalog(items: HTMLElement[]) {
+  setCatalog(items: HTMLElement[]) {
     this._cardsGallery.replaceChildren(...items)
   }   
 }
