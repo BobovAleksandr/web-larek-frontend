@@ -31,7 +31,7 @@ export abstract class Component {
     }
   }   
 
-  render(): HTMLElement {
+  render(data?: object): HTMLElement {
     return this.container
   }
 

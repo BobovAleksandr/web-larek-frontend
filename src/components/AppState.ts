@@ -1,10 +1,11 @@
-import { IProduct, IOrder } from "../types";
+import { IProduct, IOrder, Payment } from "../types";
 import { IEvents } from "./base/events";
 
 export class AppState {
+  protected _products: IProduct[] = [];
   protected _basket: IProduct[] = [];
-  products: IProduct[] = [];
-  order: IOrder = {
+  protected _currentProduct: IProduct;
+  protected _order: IOrder = {
     payment: null,
     email: '',
     phone: '',
@@ -18,9 +19,8 @@ export class AppState {
   }
 
   toggleBasketProduct(product: IProduct) {
-    const isProductinBasket: boolean = this._basket.includes(product)
-    if (isProductinBasket) {
-      this._basket = this._basket.filter(item => item !== product)
+    if (this._basket.includes(product)) {
+      this._basket = this._basket.filter(item => item.id !== product.id)
     } else {
       this._basket.push(product)
     }
@@ -32,32 +32,43 @@ export class AppState {
     this.events.emit('basket:cleared')
   }
 
-  getBasketTotal(): number {
+  get basketTotal(): number {
     return this._basket.reduce((sum, product) => sum + product.price, 0)
   }
 
-  addItemsToOrder() {
-    this.order.items.push(...this._basket)
-    this.events.emit('order:created', this.order)
-  }
-
-  clearOrder() {
-    this.order.payment = null;
-    this.order.email = '';
-    this.order.phone = '';
-    this.order.adress = '';
-    this.order.total = 0;
-    this.order.items = [];
+  clearOrder(): void {
+    this._order.payment = null;
+    this._order.email = '';
+    this._order.phone = '';
+    this._order.adress = '';
+    this._order.total = 0;
+    this._order.items = [];
     this.events.emit('order:cleared')
   }
 
+  isCurrentProductInBasket(): boolean {
+    return this._basket.includes(this._currentProduct)
+  }
+
   setCatalog(items: IProduct[]) {
-    this.products = items
-    this.events.emit('catalog:changed', this.products)
+    this._products = items
+    this.events.emit('catalog:changed', this._products)
   }
 
   get basket() {
     return this._basket
   }
 
+  set currentProduct(product: IProduct) {
+    this._currentProduct = product
+  }
+
+  get currentProduct() {
+    return this._currentProduct;
+  }
+
+  set orderPayment(value: Payment) {
+    this._order.payment = value
+    this.events.emit<Record<string, Payment>>('payment:changed', { payment: value })
+  }
 }

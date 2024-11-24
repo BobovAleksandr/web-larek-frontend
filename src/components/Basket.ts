@@ -30,7 +30,7 @@ export class Basket extends Component {
     this._price.textContent = String(value) + currency
   }
 
-  checkButtonState(isBasketPositive: boolean) {
-    isBasketPositive ? this.setDisabled(this._button, false) : this.setDisabled(this._button, true)
+  toggleButtonState(isBasketPositive: boolean) {
+    this.setDisabled(this._button, !isBasketPositive)
   }
 }

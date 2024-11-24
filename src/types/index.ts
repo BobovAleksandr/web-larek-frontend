@@ -20,7 +20,7 @@ export interface IProductList {
   getSelectedProduct(): IProduct;
 }
 
-export type Payment = 'online' | 'offline' | null
+export type Payment = 'card' | 'cash' | null
 
 export interface IOrder {
   payment: Payment;
@@ -34,7 +34,6 @@ export interface IOrder {
 export type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
 
 export interface IApi {
-  baseUrl: string;
   get<T>(url: string): Promise<T>;
   post<T>(orl: string, data: object, method?: ApiPostMethods): Promise<T>;
 }
