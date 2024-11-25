@@ -82,8 +82,14 @@ events.on('card:deleted', (product: IProduct) => {
 })
 
 // Закрытие модального окна
+events.on('modal:open', () => {
+  page.lockPage(true)
+})
+
+// Закрытие модального окна
 events.on('modal:close', () => {
   app.currentProduct = null;
+  page.lockPage(false)
 })
 
 // Открытие формы со способом оплаты и адресом
@@ -99,9 +105,6 @@ events.on('paymentButton:pressed', (data: Record<string, Payment>) => {
 
 // Изменение актвной кнопки оплаты
 events.on('payment:changed', (data: Record<string, Payment>) => {
-  orderForm.resetButtons()
+  orderForm.resetButtonsState()
   orderForm.setButtonActive(data.payment)
 })
-
-
-// TODO - закреп страницы при открытии модалки

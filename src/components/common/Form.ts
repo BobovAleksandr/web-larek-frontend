@@ -56,7 +56,7 @@ export class OrderForm extends Form {
     return ensureElement(`button[name=${button}]`, this.container).classList.add('button_alt-active')
   }
 
-  resetButtons() {
+  resetButtonsState() {
     this._paymentButtons.forEach(button => {
       button.classList.remove('button_alt-active')
     })
