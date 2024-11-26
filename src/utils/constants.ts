@@ -5,6 +5,9 @@ export const endpoints = {
   productUri: '/product',
 };
 
+export const phoneRegEx = /^([+]?[0-9\s\(\)]{3,25})*$/i
+export const emailRegEx = /\A[^@]+@([^@\.]+\.)+[^@\.]+\z/
+
 export enum CategorySelectors {
   'софт-скил' = 'soft',
   'другое' = 'other',

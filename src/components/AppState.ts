@@ -1,4 +1,5 @@
-import { IProduct, IOrder, Payment, OrderFormData, ContactsFormData } from "../types";
+import { IProduct, IOrder, OrderFormData, ContactsFormData } from "../types";
+import { emailRegEx, phoneRegEx } from "../utils/constants";
 import { IEvents } from "./base/events";
 
 export class AppState {
@@ -78,5 +79,56 @@ export class AppState {
     this._order.email = data.email
     this._order.phone = data.phone
     this.events.emit('contactsData:changed')
+  }
+  
+  checkOrderFormValid(data: OrderFormData): void {
+    const validity: { status: boolean, error: string } = {
+      status: false,
+      error: ''
+    }
+
+    if (!data.payment) {
+      validity.error = 'Выберите способ оплаты'
+    } 
+    if (data.address === '') {
+      validity.error = 'Укажите ваш адрес'
+    } else if (data.payment && data.address) {
+      validity.status = true,
+      validity.error = ''
+    }
+    this.events.emit('orderForm:checked', validity)
+  }
+
+  checkContactsFormValid(data: ContactsFormData) {
+    const validity: { status: boolean, error: string } = {
+      status: false,
+      error: ''
+    }
+    console.log(`data.email - ${data.email}, data.phone - ${data.phone}`)
+    if (!data.phone && !data.email) {
+      validity.error = 'Заполните необходимые поля'
+    }
+    if (!data.email || data.email === '') {
+      validity.error = 'Укажите ваш email'
+    } 
+    if (!data.phone || data.phone === '') {
+      validity.error = 'Укажите ваш номер телефона'
+    } 
+    // if (data.email !== '' && !emailRegEx.test(data.email)) {
+    //   validity.error = 'Некорректный формат email'
+    // }
+    else {
+      validity.status = true,
+      validity.error = ''
+    }
+    // if ((data.email !== '') && (!data.email.match(emailRegEx))) {
+    //   validity.error = 'Некорректный формат email'
+    // }
+    // if ((data.phone !== '') && (!data.phone.match(phoneRegEx))) {
+    //   validity.error = 'Некорректный формат номера телефона'
+    // } 
+    
+    console.log(validity)
+    this.events.emit('contactsForm:checked', validity)
   }
 }

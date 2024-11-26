@@ -1,7 +1,7 @@
 import { IProduct } from "../types";
-import { CategorySelectors, templates } from "../utils/constants";
-import { cloneTemplate, ensureElement } from "../utils/utils";
-import { Component } from "./base/Component";
+import { CategorySelectors } from "../utils/constants";
+import { ensureElement } from "../utils/utils";
+import { Component } from "./base/component";
 import { IEvents } from "./base/events";
 
 export const currency = ' синапсов'

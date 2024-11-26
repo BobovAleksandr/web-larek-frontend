@@ -1,16 +1,16 @@
 import './scss/styles.scss';
 import { Api, ApiListResponse } from './components/base/api';
 import { API_URL, templates, endpoints, CDN_URL } from './utils/constants';
-import { AppState } from './components/AppState';
+import { AppState } from './components/appState';
 import { EventEmitter } from './components/base/events';
-import { ContactsFormData, IOrder, IProduct, OrderFormData, Payment } from './types';
-import { Page } from './components/Page';
-import { cloneTemplate, ensureAllElements, ensureElement } from './utils/utils';
-import { CardBasket, CardCatalog, CardPreview } from './components/Card';
-import { Modal } from './components/common/Modal';
-import { Basket } from './components/Basket';
-import { ContactsForm, Form, OrderForm } from './components/common/Form';
-import { Success } from './components/Sucess';
+import { ContactsFormData, IOrder, IProduct, OrderFormData } from './types';
+import { Page } from './components/page';
+import { cloneTemplate, ensureElement } from './utils/utils';
+import { CardBasket, CardCatalog, CardPreview } from './components/card';
+import { Modal } from './components/common/modal';
+import { Basket } from './components/basket';
+import { ContactsForm, OrderForm } from './components/common/form';
+import { Success } from './components/sucess';
 
 const productApi = new Api(API_URL)
 const imagesApi = new Api(CDN_URL)
@@ -143,5 +143,25 @@ events.on('order:cleared', () => {
   modal.close()
 })
 
+// Изменения в полях формы заказа -> вызов проверки валидации формы
+events.on('orderForm:changed', (data: OrderFormData) => {
+  app.checkOrderFormValid(data)
+})
 
-// TODO - Пройтись форматтером
+// Проверка валидации формы заказа -> смена текста ошибки формы, смена блок кнопки сабмита
+events.on('orderForm:checked', (data: { status: boolean, error: string }) => {
+  orderForm.valid = data.status
+  orderForm.errors = data.error
+})
+
+// Изменения в полях формы контактов -> вызов проверки валидации формы
+events.on('contactsForm:changed', (data: ContactsFormData) => {
+  console.log(data)
+  app.checkContactsFormValid(data)
+})
+
+// Проверка валидации формы контактов -> смена текста ошибки формы, смена блок кнопки сабмита
+events.on('contactsForm:checked', (data: { status: boolean, error: string }) => {
+  contactsForm.valid = data.status
+  contactsForm.errors = data.error
+})

@@ -1,5 +1,5 @@
 import { ensureElement } from "../utils/utils";
-import { Component } from "./base/Component";
+import { Component } from "./base/component";
 import { IEvents } from "./base/events";
 
 interface IPage {
@@ -27,7 +27,7 @@ export class Page extends Component implements IPage {
   }
 
   set basketCounter(value: number) {
-    this.setText(this._basketCounter, String(value))
+    this._basketCounter.textContent = String(value)
   }
 
   setCatalog(items: HTMLElement[]) {

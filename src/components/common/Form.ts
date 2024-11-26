@@ -1,9 +1,12 @@
 import { Payment } from "../../types";
 import { ensureAllElements, ensureElement } from "../../utils/utils";
-import { Component } from "../base/Component";
+import { Component } from "../base/component";
 import { IEvents } from "../base/events";
 
-export class Form extends Component {
+
+
+export abstract class Form extends Component {
+  protected _inputs: HTMLInputElement[];
   protected _submit: HTMLButtonElement;
   protected _errors: HTMLElement;
   protected _content: HTMLElement;
@@ -13,16 +16,9 @@ export class Form extends Component {
 
     this._submit = ensureElement<HTMLButtonElement>('button[type=submit]', this.container);
     this._errors = ensureElement<HTMLElement>('.form__errors', this.container);
+    this._inputs = ensureAllElements<HTMLInputElement>('.form__input', this.container)
+    this._inputs.forEach(input => input.addEventListener('change', this.handleFormChange.bind(this)))
   
-    this.container.addEventListener('input', (event: Event) => {
-      const target = event.target as HTMLInputElement
-      console.log(target)
-      this.events.emit(`${target.name}:input`, {
-        field: target.name,
-        value: target.textContent,
-      })
-    })
-
     this.container.addEventListener('submit', (e: Event) => {
       this.formSubmit(e)
     });
@@ -36,16 +32,18 @@ export class Form extends Component {
     this._errors.textContent = value
   }
 
-  formSubmit(e: Event) {
+  formSubmit(e: Event): void {
     e.preventDefault();
   }
+
+  abstract handleFormChange(): void
 }
 
 // Форма с типом оплаты и адресом
 export class OrderForm extends Form {
   protected _paymentButtons: HTMLButtonElement[];
   protected _addressInput: HTMLInputElement;
-  protected _activePaymentButton: HTMLButtonElement;
+  protected _activePaymentButton: HTMLButtonElement = null;
 
   constructor(protected container: HTMLFormElement, events: IEvents) {
     super(container, events)
@@ -59,9 +57,17 @@ export class OrderForm extends Form {
         const target = event.target as HTMLButtonElement;
         this._activePaymentButton = target;
         this._activePaymentButton.classList.add('button_alt-active')
+        this.handleFormChange()
       })
     })
   } 
+
+  handleFormChange() {
+    this.events.emit(`${this.container.name}Form:changed`, { 
+      address: String(this._addressInput.value).trim(),
+      payment: this._activePaymentButton?.name ?? null
+    })
+  }
 
   private resetButtons() {
     this._paymentButtons.forEach(button => {
@@ -69,16 +75,17 @@ export class OrderForm extends Form {
     })
   }
 
-  formSubmit(e: Event) {
+  formSubmit(e: Event): void {
     super.formSubmit(e)
     this.events.emit<Record<string, string | Payment>>(`${this.container.name}:submit`, { 
-      address: this._addressInput.value, 
+      address: String(this._addressInput.value).trim(), 
       payment: this._activePaymentButton.name 
     });
   }
 }
 
 export class ContactsForm extends Form {
+  
   protected _emailInput: HTMLInputElement;
   protected _phoneInput: HTMLInputElement;
 
@@ -89,14 +96,19 @@ export class ContactsForm extends Form {
     this._phoneInput = ensureElement<HTMLInputElement>('input[name="phone"]', this.container)
   }
 
-  formSubmit(e: Event) {
+  formSubmit(e: Event): void {
     super.formSubmit(e)
     this.events.emit<Record<string, string>>(`${this.container.name}:submit`, { 
-      email: this._emailInput.value, 
-      phone: this._phoneInput.value 
+      email: String(this._emailInput.value).trim(), 
+      phone: String(this._phoneInput.value).trim()
     });
   }
+
+  handleFormChange(): void {
+    this.events.emit(`${this.container.name}Form:changed`, { 
+      email: String(this._emailInput.value).trim(),
+      phone: String(this._phoneInput.value).trim(),
+    })
+  }
+
 }
-
-
-// TODO - Валидация форм
