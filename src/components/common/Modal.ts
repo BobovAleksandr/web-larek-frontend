@@ -48,10 +48,8 @@ export class Modal extends Component implements IModal {
   }
 
   render(): HTMLElement {
+    const renderedContainer = super.render();
     this.open();
-    return this.container;
+    return renderedContainer
   }
-
-
-
 }

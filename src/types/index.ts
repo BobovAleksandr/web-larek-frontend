@@ -20,15 +20,25 @@ export interface IProductList {
   getSelectedProduct(): IProduct;
 }
 
-export type Payment = 'card' | 'cash' | null
+export type Payment = 'card' | 'cash'
 
 export interface IOrder {
   payment: Payment;
   email: string;
   phone: string;
-  adress: string;
+  address: string;
   total: number;
   items: IProduct[];
+}
+
+export type OrderFormData = {
+  address: string;
+  payment: Payment;
+}
+
+export type ContactsFormData = {
+  phone: string;
+  email: string;
 }
 
 export type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';

@@ -24,8 +24,8 @@ abstract class Card extends Component {
 
   render(product: IProduct): HTMLElement {
     this.product = product
-    this.setText(this._title, product.title)
-    this.setText(this._price, (product.price ?? '0') + currency)
+    this._title.textContent = product.title;
+    this._price.textContent =  (product.price ?? '0') + currency;
     const parentRender = super.render()
     return parentRender;
   }
@@ -74,7 +74,7 @@ export class CardCatalog extends Card {
 
   render(product: IProduct): HTMLElement {
     this._category.classList.add(`card__category_${CategorySelectors[product.category]}`)
-    this.setText(this._category, product.category)
+    this._category.textContent = product.category
     
     this.setImage(this._image, `https://larek-api.nomoreparties.co/content/weblarek/${product.image}`, product.title)
     this.container.addEventListener('click', () => {
@@ -104,17 +104,17 @@ export class CardPreview extends CardCatalog {
 
   changeButtonText(isInBasket: boolean) {
     const currentText = isInBasket ? 'Убрать из корзины' : 'В корзину'
-    this.setText(this._button, currentText)
+    this._button.textContent = currentText;
   }
 
   render(product: IProduct): HTMLElement {
-    this.setText(this._description, product.description)
+    this._description.textContent = product.description;
     if (!product.price) {
       this.setDisabled(this._button, true)
     } else {
       this.setDisabled(this._button, false)
     }
-    this.setText(this._category, product.category)
+    this._category.textContent = product.category;
     this._category.classList.add(`card__category_${CategorySelectors[product.category]}`)
    
     const parentRender = super.render(product)

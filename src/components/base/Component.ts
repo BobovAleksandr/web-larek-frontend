@@ -7,16 +7,6 @@ export abstract class Component {
     this.events = events
   }
 
-  toggleClass(element: HTMLElement, className: string, force?: boolean) {
-    element.classList.toggle(className, force);
-  }
-
-  protected setText(element: HTMLElement, value: unknown) {
-    if (element) {
-        element.textContent = String(value);
-    }
-  }
-
   setImage(element: HTMLImageElement, src: string, alt: string) {
     if (element) {
       element.src = String(src);
@@ -38,7 +28,6 @@ export abstract class Component {
   cloneTemplate(template: HTMLTemplateElement) {
     return cloneTemplate(template)
   }
-
 }
 
 

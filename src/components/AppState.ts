@@ -1,4 +1,4 @@
-import { IProduct, IOrder, Payment } from "../types";
+import { IProduct, IOrder, Payment, OrderFormData, ContactsFormData } from "../types";
 import { IEvents } from "./base/events";
 
 export class AppState {
@@ -9,7 +9,7 @@ export class AppState {
     payment: null,
     email: '',
     phone: '',
-    adress: '',
+    address: '',
     total: 0,
     items: [],
   };
@@ -27,20 +27,16 @@ export class AppState {
     this.events.emit('basket:changed', this._basket)
   }
 
-  clearBasket() {
-    this._basket.length = 0
-    this.events.emit('basket:cleared')
-  }
-
-  get basketTotal(): number {
+  get totalBasketPrice(): number {
     return this._basket.reduce((sum, product) => sum + product.price, 0)
   }
 
-  clearOrder(): void {
+  clearData(): void {
+    this._basket.length = 0
     this._order.payment = null;
     this._order.email = '';
     this._order.phone = '';
-    this._order.adress = '';
+    this._order.address = '';
     this._order.total = 0;
     this._order.items = [];
     this.events.emit('order:cleared')
@@ -67,8 +63,20 @@ export class AppState {
     return this._currentProduct;
   }
 
-  set orderPayment(value: Payment) {
-    this._order.payment = value
-    this.events.emit<Record<string, Payment>>('payment:changed', { payment: value })
+  set orderProducts(items: IProduct[]) {
+    this._order.items = [...items]
+    this.events.emit('orderProducts:changed')
+  }
+
+  set orderFormData(data: OrderFormData) {
+    this._order.address = data.address;
+    this._order.payment = data.payment;
+    this.events.emit('orderData:changed')
+  }
+
+  set contactsFormData(data: ContactsFormData) {
+    this._order.email = data.email
+    this._order.phone = data.phone
+    this.events.emit('contactsData:changed')
   }
 }
