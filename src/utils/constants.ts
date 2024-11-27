@@ -2,11 +2,12 @@ export const API_URL = `${process.env.API_ORIGIN}/api/weblarek`;
 export const CDN_URL = `${process.env.API_ORIGIN}/content/weblarek`;
 
 export const endpoints = {
-  productUri: '/product',
+  productsGetUri: '/product',
+  productPostUri: '/order',
 };
 
-export const phoneRegEx = /^([+]?[0-9\s\(\)]{3,25})*$/i
-export const emailRegEx = /\A[^@]+@([^@\.]+\.)+[^@\.]+\z/
+export const phoneRegEx = /^\+(?:[0-9] ?){6,14}[0-9]$/
+export const emailRegEx = /^[^@]+@([^@.]+\.)+[^@.]+$/
 
 export enum CategorySelectors {
   'софт-скил' = 'soft',

@@ -77,7 +77,7 @@ export class OrderForm extends Form {
 
   formSubmit(e: Event): void {
     super.formSubmit(e)
-    this.events.emit<Record<string, string | Payment>>(`${this.container.name}:submit`, { 
+    this.events.emit(`${this.container.name}Form:submit`, { 
       address: String(this._addressInput.value).trim(), 
       payment: this._activePaymentButton.name 
     });
@@ -98,7 +98,7 @@ export class ContactsForm extends Form {
 
   formSubmit(e: Event): void {
     super.formSubmit(e)
-    this.events.emit<Record<string, string>>(`${this.container.name}:submit`, { 
+    this.events.emit(`${this.container.name}Form:submit`, { 
       email: String(this._emailInput.value).trim(), 
       phone: String(this._phoneInput.value).trim()
     });

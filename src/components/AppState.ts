@@ -4,7 +4,7 @@ import { IEvents } from "./base/events";
 
 export class AppState {
   protected _products: IProduct[] = [];
-  protected _basket: IProduct[] = [];
+  protected _basketProducts: IProduct[] = [];
   protected _currentProduct: IProduct;
   protected _order: IOrder = {
     payment: null,
@@ -20,53 +20,61 @@ export class AppState {
   }
 
   toggleBasketProduct(product: IProduct) {
-    if (this._basket.includes(product)) {
-      this._basket = this._basket.filter(item => item.id !== product.id)
+    if (this._basketProducts.includes(product)) {
+      this._basketProducts = this._basketProducts.filter(item => item.id !== product.id)
     } else {
-      this._basket.push(product)
+      this._basketProducts.push(product)
     }
-    this.events.emit('basket:changed', this._basket)
+    this.events.emit('basket:changed', this._basketProducts)
   }
 
   get totalBasketPrice(): number {
-    return this._basket.reduce((sum, product) => sum + product.price, 0)
+    return this._basketProducts.reduce((sum, product) => sum + product.price, 0)
   }
 
-  clearData(): void {
-    this._basket.length = 0
+  clearAllData(): void {
+    this._basketProducts.length = 0
     this._order.payment = null;
     this._order.email = '';
     this._order.phone = '';
     this._order.address = '';
     this._order.total = 0;
     this._order.items = [];
-    this.events.emit('order:cleared')
+    this.events.emit('allData:cleared')
+    this.events.emit('basket:changed')
   }
 
-  isCurrentProductInBasket(): boolean {
-    return this._basket.includes(this._currentProduct)
+  private isProductInBasket(product: IProduct): boolean {
+    return this._basketProducts.includes(product)
   }
 
-  setCatalog(items: IProduct[]) {
+  setCatalog(items: IProduct[]): void {
     this._products = items
     this.events.emit('catalog:changed', this._products)
   }
 
-  get basket() {
-    return this._basket
+  get basketProducts() {
+    return this._basketProducts
   }
 
-  set currentProduct(product: IProduct) {
-    this._currentProduct = product
+  set currentProduct(product: IProduct | null) {
+    if (product) {
+      this._currentProduct = product
+      this.events.emit('product:selected', { 
+        product: this._currentProduct,
+        isProductInBasket: this.isProductInBasket(this._currentProduct)
+      })
+    }
   }
 
   get currentProduct() {
     return this._currentProduct;
   }
 
-  set orderProducts(items: IProduct[]) {
-    this._order.items = [...items]
-    this.events.emit('orderProducts:changed')
+  set orderProductsData(items: IProduct[]) {
+    this._order.items = items.map(product => product.id)
+    this._order.total = items.reduce((sum, product) => sum + product.price, 0)
+    this.events.emit('orderProductsData:changed')
   }
 
   set orderFormData(data: OrderFormData) {
@@ -78,7 +86,7 @@ export class AppState {
   set contactsFormData(data: ContactsFormData) {
     this._order.email = data.email
     this._order.phone = data.phone
-    this.events.emit('contactsData:changed')
+    this.events.emit('contactsData:changed', this._order)
   }
   
   checkOrderFormValid(data: OrderFormData): void {
@@ -86,11 +94,12 @@ export class AppState {
       status: false,
       error: ''
     }
-
     if (!data.payment) {
+      validity.status = false
       validity.error = 'Выберите способ оплаты'
     } 
     if (data.address === '') {
+      validity.status = false
       validity.error = 'Укажите ваш адрес'
     } else if (data.payment && data.address) {
       validity.status = true,
@@ -101,34 +110,32 @@ export class AppState {
 
   checkContactsFormValid(data: ContactsFormData) {
     const validity: { status: boolean, error: string } = {
-      status: false,
+      status: true,
       error: ''
     }
-    console.log(`data.email - ${data.email}, data.phone - ${data.phone}`)
     if (!data.phone && !data.email) {
+      validity.status = false
       validity.error = 'Заполните необходимые поля'
     }
-    if (!data.email || data.email === '') {
+    if (!data.email || data.email.trim() === '') {
+      validity.status = false
       validity.error = 'Укажите ваш email'
     } 
-    if (!data.phone || data.phone === '') {
+    if (!data.email.match(emailRegEx)) {
+      validity.status = false
+      validity.error = 'Некорректный формат email'
+    } // TODO проверить валидацию
+    if (!data.phone || data.phone.trim() === '') {
+      validity.status = false
       validity.error = 'Укажите ваш номер телефона'
     } 
-    // if (data.email !== '' && !emailRegEx.test(data.email)) {
-    //   validity.error = 'Некорректный формат email'
-    // }
-    else {
+    if (!data.phone.match(phoneRegEx)) {
+      validity.status = false
+      validity.error = 'Некорректный формат номера телефона'
+    } else if (data.phone.match(phoneRegEx) && data.email.match(emailRegEx)) {
       validity.status = true,
       validity.error = ''
     }
-    // if ((data.email !== '') && (!data.email.match(emailRegEx))) {
-    //   validity.error = 'Некорректный формат email'
-    // }
-    // if ((data.phone !== '') && (!data.phone.match(phoneRegEx))) {
-    //   validity.error = 'Некорректный формат номера телефона'
-    // } 
-    
-    console.log(validity)
     this.events.emit('contactsForm:checked', validity)
   }
 }

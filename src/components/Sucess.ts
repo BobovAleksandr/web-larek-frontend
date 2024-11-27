@@ -13,7 +13,7 @@ export class Success extends Component {
 		this._description = ensureElement<HTMLSpanElement>('.order-success__description', this.container)
 		this._sucessButton = ensureElement<HTMLButtonElement>('.order-success__close', this.container)
 		this._sucessButton.addEventListener('click', () => {
-			events.emit('sucessButton:pressed')
+			events.emit('sucсessButton:pressed')
 		})
 	}
 

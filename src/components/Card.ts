@@ -1,5 +1,5 @@
 import { IProduct } from "../types";
-import { CategorySelectors } from "../utils/constants";
+import { CategorySelectors, CDN_URL } from "../utils/constants";
 import { ensureElement } from "../utils/utils";
 import { Component } from "./base/component";
 import { IEvents } from "./base/events";
@@ -76,9 +76,9 @@ export class CardCatalog extends Card {
     this._category.classList.add(`card__category_${CategorySelectors[product.category]}`)
     this._category.textContent = product.category
     
-    this.setImage(this._image, `https://larek-api.nomoreparties.co/content/weblarek/${product.image}`, product.title)
+    this.setImage(this._image, CDN_URL + product.image, product.title)
     this.container.addEventListener('click', () => {
-      this.events.emit('card:open', product)
+      this.events.emit('catalogCard:pressed', product)
     })
 
     const parentRender = super.render(product)

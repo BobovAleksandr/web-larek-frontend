@@ -22,13 +22,13 @@ export interface IProductList {
 
 export type Payment = 'card' | 'cash'
 
-export interface IOrder {
+export type IOrder = {
   payment: Payment;
   email: string;
   phone: string;
   address: string;
   total: number;
-  items: IProduct[];
+  items: string[];
 }
 
 export type OrderFormData = {
