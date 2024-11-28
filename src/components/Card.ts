@@ -1,7 +1,7 @@
 import { IProduct } from "../types";
 import { CategorySelectors, CDN_URL } from "../utils/constants";
 import { ensureElement } from "../utils/utils";
-import { Component } from "./base/Component";
+import { Component } from "./base/component";
 import { IEvents } from "./base/events";
 
 export const currency = ' синапсов'
@@ -84,7 +84,6 @@ export class CardCatalog extends Card {
     const parentRender = super.render(product)
     return parentRender;
   }
-  
 }
 
 // Карточка товара (превью)

@@ -19,17 +19,13 @@ export class AppState {
     this.events = events
   }
 
-  toggleBasketproduct(product: IProduct): void {
+  toggleBasketProduct(product: IProduct): void {
     if (this._basketProducts.includes(product)) {
       this._basketProducts = this._basketProducts.filter(item => item.id !== product.id)
       if (this._selectedProduct) {
         this.events.emit('card:productChanged', {isProductInBasket: this.isProductInBasket(product)})
       } else {
-        this.events.emit('basket:changed', {
-          products: this._basketProducts,
-          totalBasketPrice: this.totalBasketPrice,
-          isBasketPositive: this.totalBasketPrice > 0
-        })
+        this.basketInit()
       }
     } else {
       this._basketProducts.push(product)
@@ -37,11 +33,11 @@ export class AppState {
     }
     this.events.emit('basket:amountChanged', { value: String(this._basketProducts.length) })
   }
-
+  
   private get totalBasketPrice(): number {
     return this._basketProducts.reduce((sum, product) => sum + product.price, 0)
   }
-
+  
   clearAllData(): void {
     this._basketProducts.length = 0
     this._order.payment = null;
@@ -50,7 +46,18 @@ export class AppState {
     this._order.address = '';
     this._order.total = 0;
     this._order.items = [];
-    this.events.emit('allData:cleared')
+    this.events.emit('allData:cleared', { basketProducts: this._basketProducts.length })
+  }
+  
+  basketInit() {
+    if (this._basketProducts) {
+      this.events.emit('basket:changed', {
+        products: this._basketProducts,
+        totalBasketPrice: this.totalBasketPrice,
+        isBasketPositive: this.totalBasketPrice > 0
+      })
+    } 
+    this.events.emit('basket:open', { isBasketPositive: this.totalBasketPrice > 0 })
   }
 
   private isProductInBasket(product: IProduct): boolean {
@@ -67,8 +74,8 @@ export class AppState {
   }
 
   set selectedProduct(product: IProduct | null) {
+    this._selectedProduct = product
     if (product) {
-      this._selectedProduct = product
       this.events.emit('product:selected', { 
         product: this._selectedProduct,
         isProductInBasket: this.isProductInBasket(this._selectedProduct)

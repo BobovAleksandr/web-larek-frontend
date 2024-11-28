@@ -1,5 +1,6 @@
 import { ensureElement } from "../utils/utils";
-import { Component } from "./base/Component";
+import { Component } from "./base/component";
+
 import { IEvents } from "./base/events";
 
 interface IPage {
@@ -21,7 +22,6 @@ export class Page extends Component implements IPage {
     this._wrapper = ensureElement<HTMLElement>('.page__wrapper', this.container)
 
     this._basketButton.addEventListener('click', () => {
-      this.events.emit('basket:changed')
       this.events.emit('basketIcon:pressed')
     })
   }

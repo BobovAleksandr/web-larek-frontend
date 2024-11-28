@@ -31,17 +31,17 @@ export class Modal extends Component implements IModal {
   open() {
     this.container.classList.add('modal_active');
     this.events.emit('modal:open');
-    document.addEventListener('keyup', this.handleEscUp.bind(this));
+    document.addEventListener('keyup', this.handleEscUp);
   }
 
   close() {
     this.container.classList.remove('modal_active');
     this.content = null;
     this.events.emit('modal:close');
-    document.removeEventListener('keyup', () => this.handleEscUp);
+    document.removeEventListener('keyup', this.handleEscUp);
   }
 
-  protected handleEscUp (evt: KeyboardEvent) {
+  private handleEscUp = (evt: KeyboardEvent) => {
     if (evt.key === 'Escape') {
       this.close();
     }

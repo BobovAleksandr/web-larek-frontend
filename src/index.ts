@@ -1,16 +1,16 @@
 import './scss/styles.scss';
 import { Api, ApiListResponse } from './components/base/api';
-import { API_URL, templates, endpoints, CDN_URL } from './utils/constants';
+import { API_URL, templates, endpoints } from './utils/constants';
 import { AppState } from './components/AppState';
 import { EventEmitter } from './components/base/events';
 import { ContactsFormData, IOrder, IProduct, OrderFormData } from './types';
 import { Page } from './components/Page';
 import { cloneTemplate, ensureElement } from './utils/utils';
 import { CardBasket, CardCatalog, CardPreview } from './components/Card';
-import { Modal } from './components/common/Modal';
+import { Modal } from './components/common/modal';
 import { Basket } from './components/Basket';
 import { ContactsForm, OrderForm } from './components/common/Form';
-import { Success } from './components/Sucess';
+import { Success } from './components/sucess';
 
 const api = new Api(API_URL)
 
@@ -56,7 +56,7 @@ events.on('product:selected', (data: { product: IProduct, isProductInBasket: boo
 
 // Нажатие кнопки добавления / удаления товара в карточке preview -> Изменение корзины
 events.on('cardPreviewButton:pressed', (product: IProduct) => {
-  app.toggleBasketproduct(product)
+  app.toggleBasketProduct(product)
 })
 
 // Добавление / удаление товара из корзины -> Смена кнопки "Купить" в карточке товара
@@ -66,21 +66,27 @@ events.on('card:productChanged', (data: { isProductInBasket: boolean }) => {
 
 // Удаление товара из корзины (в модальном окне корзины) -> Изменение списка товаров в корзине
 events.on('basketCardButton:pressed', (product: IProduct) => {
-  app.toggleBasketproduct(product)
+  app.toggleBasketProduct(product)
 })
 
-// Открытие корзины -> Рендер корзины (без карточек)
+// нажатие на кнопку корзины -> Инициализация корзины
 events.on('basketIcon:pressed', () => {
+  app.basketInit()
+})
+
+// Открытие корзины -> Рендер компонента корзины
+events.on('basket:open', (data: { isBasketPositive: boolean}) => {
   modal.render();
   modal.content = basket.render();
+  basket.toggleButtonState(data.isBasketPositive)
 })
 
-// Изменение корзины -> Ререндер корзины и счетчика товаров в корзине
+// Изменение корзины -> Ререндер корзины 
 events.on('basket:changed', (data: {products: IProduct[], totalBasketPrice: number, isBasketPositive: boolean}) => {
   const basketCards: HTMLElement[] = [];
   data.products.forEach((product: IProduct) => {
     const newCard = new CardBasket(cloneTemplate(templates.cardBasketTemplate), events);
-    newCard.index = app.basketProducts.indexOf(product) + 1;
+    newCard.index = data.products.indexOf(product) + 1;
     basketCards.push(newCard.render(product));
   });
   basket.content = basketCards;
@@ -95,13 +101,13 @@ events.on('basket:amountChanged', (data: {value: string}) => {
 
 // Открытие модального окна -> Блокировка скролла
 events.on('modal:open', () => {
-  page.lockPage(true)
+  page.lockPage(true);
 })
 
 // Закрытие модального окна -> Разблокировка скролла, сброс выбранного товара
 events.on('modal:close', () => {
   if (app.selectedProduct) { app.selectedProduct = null };
-  page.lockPage(false)
+  page.lockPage(false);
 })
 
 // Нажатие "Оформить" в корзине -> Копирование товаров и суммы товаров в заказ, сброс выбранного элемента
@@ -156,10 +162,10 @@ events.on('contactsForm:submit', (data: ContactsFormData) => {
   app.contactsFormData = data
 })
 
-// тестовый метод
-events.on('form:submit', (data: T) => {
-  app.contactsFormData = data
-})
+// // тестовый метод
+// events.on('form:submit', <T extends object>(data: T) => {
+//   app.contactsFormData = data
+// })
 
 // Изменение данных email и телефона -> Отправка заказа
 events.on('contactsData:changed', (order: IOrder) => {
@@ -185,7 +191,7 @@ events.on('sucсessButton:pressed', () => {
 })
 
 // Сброс заказа и корзины -> Закрытие модалки и сброс её контента
-events.on('allData:cleared', () => {
-  modal.content = null
+events.on('allData:cleared', (data: { basketProducts: number }) => {
+  page.basketCounter = String(data.basketProducts)
   modal.close()
 })

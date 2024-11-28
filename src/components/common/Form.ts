@@ -1,6 +1,6 @@
 import { OrderFormData, Payment } from "../../types";
 import { ensureAllElements, ensureElement } from "../../utils/utils";
-import { Component } from "../base/Component";
+import { Component } from "../base/component";
 import { IEvents } from "../base/events";
 
 export abstract class Form extends Component {
@@ -74,8 +74,8 @@ export class OrderForm extends Form {
 
   formSubmit(e: Event): void {
     super.formSubmit(e)
-    // this.events.emit(`${this.container.name}Form:submit`, { 
-    this.events.emit(`form:submit`, { 
+    this.events.emit(`${this.container.name}Form:submit`, { 
+    // this.events.emit(`form:submit`, <OrderFormData>{ 
       form: this.container,
       address: String(this._addressInput.value).trim(), 
       payment: this._activePaymentButton.name as Payment
