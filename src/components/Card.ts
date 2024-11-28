@@ -1,7 +1,7 @@
 import { IProduct } from "../types";
 import { CategorySelectors, CDN_URL } from "../utils/constants";
 import { ensureElement } from "../utils/utils";
-import { Component } from "./base/component";
+import { Component } from "./base/Component";
 import { IEvents } from "./base/events";
 
 export const currency = ' синапсов'
@@ -49,7 +49,7 @@ export class CardBasket extends Card {
     this._index = ensureElement<HTMLSpanElement>('.basket__item-index', this.container)
     this._button = ensureElement<HTMLButtonElement>(`.card__button`, this.container);
     this._button.addEventListener('click', () => {
-      this.events.emit('card:deleted', this.product)
+      this.events.emit('basketCardButton:pressed', this.product)
     })
   }
 
@@ -98,7 +98,7 @@ export class CardPreview extends CardCatalog {
     this._button = ensureElement<HTMLButtonElement>(`.card__button`, this.container);
     
     this._button.addEventListener('click', () => {
-      this.events.emit('card:buttonPressed', this.product)
+      this.events.emit('cardPreviewButton:pressed', this.product)
     })
   }
 

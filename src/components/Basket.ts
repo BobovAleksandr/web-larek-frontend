@@ -1,7 +1,7 @@
 import { ensureElement } from "../utils/utils";
-import { Component } from "./base/component";
+import { Component } from "./base/Component";
 import { IEvents } from "./base/events";
-import { currency } from "./card";
+import { currency } from "./Card";
 
 export class Basket extends Component {
   protected _title: HTMLHeadElement;

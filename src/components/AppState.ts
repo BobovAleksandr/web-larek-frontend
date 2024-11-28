@@ -5,7 +5,7 @@ import { IEvents } from "./base/events";
 export class AppState {
   protected _products: IProduct[] = [];
   protected _basketProducts: IProduct[] = [];
-  protected _currentProduct: IProduct;
+  protected _selectedProduct: IProduct;
   protected _order: IOrder = {
     payment: null,
     email: '',
@@ -19,20 +19,26 @@ export class AppState {
     this.events = events
   }
 
-  addBasketProduct(product: IProduct) {
-    this._basketProducts.push(product)
-    this.events.emit('basket:productAdded', {
-      basket: this._basketProducts,
-      isCurrent: Boolean(this.currentProduct)
-    })
+  toggleBasketproduct(product: IProduct): void {
+    if (this._basketProducts.includes(product)) {
+      this._basketProducts = this._basketProducts.filter(item => item.id !== product.id)
+      if (this._selectedProduct) {
+        this.events.emit('card:productChanged', {isProductInBasket: this.isProductInBasket(product)})
+      } else {
+        this.events.emit('basket:changed', {
+          products: this._basketProducts,
+          totalBasketPrice: this.totalBasketPrice,
+          isBasketPositive: this.totalBasketPrice > 0
+        })
+      }
+    } else {
+      this._basketProducts.push(product)
+      this.events.emit('card:productChanged', {isProductInBasket: this.isProductInBasket(product)})
+    }
+    this.events.emit('basket:amountChanged', { value: String(this._basketProducts.length) })
   }
 
-  deleteBasketProduct(product: IProduct) {
-    this._basketProducts = this._basketProducts.filter(item => item.id !== product.id)
-    this.events.emit('basket:productRemoved', this._basketProducts)
-  }
-
-  get totalBasketPrice(): number {
+  private get totalBasketPrice(): number {
     return this._basketProducts.reduce((sum, product) => sum + product.price, 0)
   }
 
@@ -45,7 +51,6 @@ export class AppState {
     this._order.total = 0;
     this._order.items = [];
     this.events.emit('allData:cleared')
-    this.events.emit('basket:changed')
   }
 
   private isProductInBasket(product: IProduct): boolean {
@@ -57,22 +62,22 @@ export class AppState {
     this.events.emit('catalog:changed', this._products)
   }
 
-  get basketProducts() {
+  get basketProducts(): IProduct[] {
     return this._basketProducts
   }
 
-  set currentProduct(product: IProduct | null) {
+  set selectedProduct(product: IProduct | null) {
     if (product) {
-      this._currentProduct = product
+      this._selectedProduct = product
       this.events.emit('product:selected', { 
-        product: this._currentProduct,
-        isProductInBasket: this.isProductInBasket(this._currentProduct)
+        product: this._selectedProduct,
+        isProductInBasket: this.isProductInBasket(this._selectedProduct)
       })
     }
   }
 
-  get currentProduct() {
-    return this._currentProduct;
+  get selectedProduct() {
+    return this._selectedProduct;
   }
 
   set orderProductsData(items: IProduct[]) {

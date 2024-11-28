@@ -1,16 +1,16 @@
 import './scss/styles.scss';
 import { Api, ApiListResponse } from './components/base/api';
 import { API_URL, templates, endpoints, CDN_URL } from './utils/constants';
-import { AppState } from './components/appState';
+import { AppState } from './components/AppState';
 import { EventEmitter } from './components/base/events';
 import { ContactsFormData, IOrder, IProduct, OrderFormData } from './types';
-import { Page } from './components/page';
+import { Page } from './components/Page';
 import { cloneTemplate, ensureElement } from './utils/utils';
-import { CardBasket, CardCatalog, CardPreview } from './components/card';
-import { Modal } from './components/common/modal';
-import { Basket } from './components/basket';
-import { ContactsForm, OrderForm } from './components/common/form';
-import { Success } from './components/sucess';
+import { CardBasket, CardCatalog, CardPreview } from './components/Card';
+import { Modal } from './components/common/Modal';
+import { Basket } from './components/Basket';
+import { ContactsForm, OrderForm } from './components/common/Form';
+import { Success } from './components/Sucess';
 
 const api = new Api(API_URL)
 
@@ -25,7 +25,7 @@ const orderForm = new OrderForm(cloneTemplate(templates.orderTemplate), events);
 const contactsForm = new ContactsForm(cloneTemplate(templates.contactsTemplate), events)
 const success = new Success(cloneTemplate(templates.successTemplate), events)
 
-// Запрос товаров с сервера -> запись массива товаров в модель
+// Запрос товаров с сервера -> Запись массива товаров в модель
 api.get(endpoints.productsGetUri)
   .then((products: ApiListResponse<IProduct>) => {
     app.setCatalog(products.items);
@@ -44,63 +44,53 @@ events.on('catalog:changed', (products: IProduct[]) => {
 
 // Нажатие на карточку в каталоге -> Выбор текущего товара
 events.on('catalogCard:pressed', (product: IProduct) => {
-  app.currentProduct = product;
+  app.selectedProduct = product;
 })
 
-// Продукт выбран -> рендер карточки, открытие модального окна
+// Продукт выбран -> Рендер карточки, открытие модального окна, проверка кнопки "Купить"
 events.on('product:selected', (data: { product: IProduct, isProductInBasket: boolean }) => {
   modal.content = cardPreview.render(data.product);
   modal.render();
-  cardPreview.changeButtonText(data.isProductInBasket) // TODO переписать
+  cardPreview.changeButtonText(data.isProductInBasket)
 })
 
-// Нажатие кнопки добавления товара в корзину -> Изменение корзины, выбор текущего товара
-events.on('card:buttonPressed', (product: IProduct) => {
-  app.addBasketProduct(product);
+// Нажатие кнопки добавления / удаления товара в карточке preview -> Изменение корзины
+events.on('cardPreviewButton:pressed', (product: IProduct) => {
+  app.toggleBasketproduct(product)
 })
 
-// TODO изменение корзины - это не перерисовка, поправить
-// Изменение корзины -> Ререндер корзины и счетчика товаров в корзине
-events.on('basket:changed', () => {
-  
-  const basketCards: HTMLElement[] = [];
-  app.basketProducts.forEach(product => {
-    const newCard = new CardBasket(cloneTemplate(templates.cardBasketTemplate), events);
-    newCard.index = app.basketProducts.indexOf(product) + 1
-    basketCards.push(newCard.render(product));
-  });
-  // TODO нижнее убрать?
-  // cardPreview.changeButtonText(app.isCurrentProductInBasket())
-  // basket.toggleButtonState(app.totalBasketPrice > 0)
-  basket.content = basketCards;
-  basket.totalPrice = app.totalBasketPrice
-})
-
-// Товар добавлен в корзину -> Изменение счётчка корзины и если карточка открыта, смена кнопки
-events.on('basket:productAdded', (data: {basket: IProduct[], isCurrent: boolean}) => {
-  page.basketCounter = data.basket.length;
-  cardPreview.changeButtonText(data.isCurrent)
-})
-
-
-
-// Может ли одно событие вызывать другое?
-// Нажата кнопка корзины -> получение суммы корзины
-events.on('basketIcon:pressed', () => {
-  const isBasketPositive: boolean = app.totalBasketPrice > 0
-  events.emit('basket:open', { value: isBasketPositive })
-})
-
-// Открытие корзины -> Рендер корзины, изменение блока кнопки "Купить"
-events.on('basket:open', (data: {value: boolean}) => {
-  basket.toggleButtonState(data.value)
-  modal.content = basket.render();
-  modal.render();
+// Добавление / удаление товара из корзины -> Смена кнопки "Купить" в карточке товара
+events.on('card:productChanged', (data: { isProductInBasket: boolean }) => {
+  cardPreview.changeButtonText(data.isProductInBasket)
 })
 
 // Удаление товара из корзины (в модальном окне корзины) -> Изменение списка товаров в корзине
-events.on('card:deleted', (product: IProduct) => {
-  app.deleteBasketProduct(product)
+events.on('basketCardButton:pressed', (product: IProduct) => {
+  app.toggleBasketproduct(product)
+})
+
+// Открытие корзины -> Рендер корзины (без карточек)
+events.on('basketIcon:pressed', () => {
+  modal.render();
+  modal.content = basket.render();
+})
+
+// Изменение корзины -> Ререндер корзины и счетчика товаров в корзине
+events.on('basket:changed', (data: {products: IProduct[], totalBasketPrice: number, isBasketPositive: boolean}) => {
+  const basketCards: HTMLElement[] = [];
+  data.products.forEach((product: IProduct) => {
+    const newCard = new CardBasket(cloneTemplate(templates.cardBasketTemplate), events);
+    newCard.index = app.basketProducts.indexOf(product) + 1;
+    basketCards.push(newCard.render(product));
+  });
+  basket.content = basketCards;
+  basket.toggleButtonState(data.isBasketPositive);
+  basket.totalPrice = data.totalBasketPrice;
+})
+
+// Изменение корзины -> Смена счетчика товаров в корзине
+events.on('basket:amountChanged', (data: {value: string}) => {
+  page.basketCounter = data.value;
 })
 
 // Открытие модального окна -> Блокировка скролла
@@ -110,13 +100,14 @@ events.on('modal:open', () => {
 
 // Закрытие модального окна -> Разблокировка скролла, сброс выбранного товара
 events.on('modal:close', () => {
-  app.currentProduct = null;  // TODO переместить сброс текущего продукта
+  if (app.selectedProduct) { app.selectedProduct = null };
   page.lockPage(false)
 })
 
-// Нажатие "Оформить" в корзине -> Копирование товаров и суммы товаров в заказ
+// Нажатие "Оформить" в корзине -> Копирование товаров и суммы товаров в заказ, сброс выбранного элемента
 events.on('basket:submit', () => {
-  app.orderProductsData = app.basketProducts
+  app.orderProductsData = app.basketProducts;
+  app.selectedProduct = null;
 })
 
 // Изменение товаров в заказе -> Рендер формы со способом оплаты и адресом
@@ -136,6 +127,7 @@ events.on('orderForm:checked', (data: { status: boolean, error: string }) => {
   orderForm.errors = data.error
 })
 
+// Соединить сабмиты
 // Сабмит формы со способом оплаты и адресом -> Запись данных из формы в модель
 events.on('orderForm:submit', (data: OrderFormData) => {
   app.orderFormData = data
@@ -161,6 +153,11 @@ events.on('contactsForm:checked', (data: { status: boolean, error: string }) => 
 // TODO сабмиты объеденить
 // Сабмит формы формы с email и телефоном -> Запись данных из формы в модель
 events.on('contactsForm:submit', (data: ContactsFormData) => {
+  app.contactsFormData = data
+})
+
+// тестовый метод
+events.on('form:submit', (data: T) => {
   app.contactsFormData = data
 })
 

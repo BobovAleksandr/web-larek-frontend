@@ -1,9 +1,7 @@
-import { Payment } from "../../types";
+import { OrderFormData, Payment } from "../../types";
 import { ensureAllElements, ensureElement } from "../../utils/utils";
-import { Component } from "../base/component";
+import { Component } from "../base/Component";
 import { IEvents } from "../base/events";
-
-
 
 export abstract class Form extends Component {
   protected _inputs: HTMLInputElement[];
@@ -19,8 +17,8 @@ export abstract class Form extends Component {
     this._inputs = ensureAllElements<HTMLInputElement>('.form__input', this.container)
     this._inputs.forEach(input => input.addEventListener('change', this.handleFormChange.bind(this)))
   
-    this.container.addEventListener('submit', (e: Event) => {
-      this.formSubmit(e)
+    this.container.addEventListener('submit', (event: Event) => {
+      this.formSubmit(event)
     });
   }
 
@@ -39,7 +37,6 @@ export abstract class Form extends Component {
   abstract handleFormChange(): void
 }
 
-// Форма с типом оплаты и адресом
 export class OrderForm extends Form {
   protected _paymentButtons: HTMLButtonElement[];
   protected _addressInput: HTMLInputElement;
@@ -77,15 +74,16 @@ export class OrderForm extends Form {
 
   formSubmit(e: Event): void {
     super.formSubmit(e)
-    this.events.emit(`${this.container.name}Form:submit`, { 
+    // this.events.emit(`${this.container.name}Form:submit`, { 
+    this.events.emit(`form:submit`, { 
+      form: this.container,
       address: String(this._addressInput.value).trim(), 
-      payment: this._activePaymentButton.name 
+      payment: this._activePaymentButton.name as Payment
     });
   }
 }
 
 export class ContactsForm extends Form {
-  
   protected _emailInput: HTMLInputElement;
   protected _phoneInput: HTMLInputElement;
 
@@ -110,5 +108,4 @@ export class ContactsForm extends Form {
       phone: String(this._phoneInput.value).trim(),
     })
   }
-
 }
