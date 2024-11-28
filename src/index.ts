@@ -56,13 +56,13 @@ events.on('product:selected', (data: { product: IProduct, isProductInBasket: boo
 
 // Нажатие кнопки добавления товара в корзину -> Изменение корзины, выбор текущего товара
 events.on('card:buttonPressed', (product: IProduct) => {
-  app.toggleBasketProduct(product);
+  app.addBasketProduct(product);
 })
 
 // TODO изменение корзины - это не перерисовка, поправить
 // Изменение корзины -> Ререндер корзины и счетчика товаров в корзине
 events.on('basket:changed', () => {
-  page.basketCounter = app.basketProducts.length;
+  
   const basketCards: HTMLElement[] = [];
   app.basketProducts.forEach(product => {
     const newCard = new CardBasket(cloneTemplate(templates.cardBasketTemplate), events);
@@ -75,6 +75,14 @@ events.on('basket:changed', () => {
   basket.content = basketCards;
   basket.totalPrice = app.totalBasketPrice
 })
+
+// Товар добавлен в корзину -> Изменение счётчка корзины и если карточка открыта, смена кнопки
+events.on('basket:productAdded', (data: {basket: IProduct[], isCurrent: boolean}) => {
+  page.basketCounter = data.basket.length;
+  cardPreview.changeButtonText(data.isCurrent)
+})
+
+
 
 // Может ли одно событие вызывать другое?
 // Нажата кнопка корзины -> получение суммы корзины
@@ -92,7 +100,7 @@ events.on('basket:open', (data: {value: boolean}) => {
 
 // Удаление товара из корзины (в модальном окне корзины) -> Изменение списка товаров в корзине
 events.on('card:deleted', (product: IProduct) => {
-  app.toggleBasketProduct(product)
+  app.deleteBasketProduct(product)
 })
 
 // Открытие модального окна -> Блокировка скролла

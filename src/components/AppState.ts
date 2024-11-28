@@ -19,13 +19,17 @@ export class AppState {
     this.events = events
   }
 
-  toggleBasketProduct(product: IProduct) {
-    if (this._basketProducts.includes(product)) {
-      this._basketProducts = this._basketProducts.filter(item => item.id !== product.id)
-    } else {
-      this._basketProducts.push(product)
-    }
-    this.events.emit('basket:changed', this._basketProducts)
+  addBasketProduct(product: IProduct) {
+    this._basketProducts.push(product)
+    this.events.emit('basket:productAdded', {
+      basket: this._basketProducts,
+      isCurrent: Boolean(this.currentProduct)
+    })
+  }
+
+  deleteBasketProduct(product: IProduct) {
+    this._basketProducts = this._basketProducts.filter(item => item.id !== product.id)
+    this.events.emit('basket:productRemoved', this._basketProducts)
   }
 
   get totalBasketPrice(): number {
