@@ -7,14 +7,14 @@ export abstract class Component {
     this.events = events
   }
 
-  setImage(element: HTMLImageElement, src: string, alt: string) {
+  setImage(element: HTMLImageElement, src: string, alt: string): void {
     if (element) {
       element.src = String(src);
       element.alt = String(alt);
     }
   }
 
-  setDisabled(element: HTMLElement, state: boolean) {
+  setDisabled(element: HTMLElement, state: boolean): void {
     if (element) {
         if (state) element.setAttribute('disabled', 'disabled');
         else element.removeAttribute('disabled');
@@ -25,7 +25,7 @@ export abstract class Component {
     return this.container
   }
 
-  cloneTemplate(template: HTMLTemplateElement) {
+  cloneTemplate(template: HTMLTemplateElement): HTMLElement {
     return cloneTemplate(template)
   }
 }

@@ -110,6 +110,7 @@ export class AppState {
       status: false,
       error: ''
     }
+    
     if (!data.payment) {
       validity.status = false
       validity.error = 'Выберите способ оплаты'
@@ -126,27 +127,23 @@ export class AppState {
 
   checkContactsFormValid(data: ContactsFormData) {
     const validity: { status: boolean, error: string } = {
-      status: true,
+      status: false,
       error: ''
     }
+
     if (!data.phone && !data.email) {
-      validity.status = false
       validity.error = 'Заполните необходимые поля'
     }
     if (!data.email || data.email.trim() === '') {
-      validity.status = false
       validity.error = 'Укажите ваш email'
     } 
-    if (!data.email.match(emailRegEx)) {
-      validity.status = false
+    if (data.email && !data.email.match(emailRegEx)) {
       validity.error = 'Некорректный формат email'
-    } // TODO проверить валидацию
+    } 
     if (!data.phone || data.phone.trim() === '') {
-      validity.status = false
       validity.error = 'Укажите ваш номер телефона'
     } 
-    if (!data.phone.match(phoneRegEx)) {
-      validity.status = false
+    if (data.phone && !data.phone.match(phoneRegEx)) {
       validity.error = 'Некорректный формат номера телефона'
     } else if (data.phone.match(phoneRegEx) && data.email.match(emailRegEx)) {
       validity.status = true,

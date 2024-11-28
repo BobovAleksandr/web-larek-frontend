@@ -34,7 +34,7 @@ export abstract class Form extends Component {
     e.preventDefault();
   }
 
-  abstract handleFormChange(): void
+  protected abstract handleFormChange(): void
 }
 
 export class OrderForm extends Form {
@@ -59,14 +59,14 @@ export class OrderForm extends Form {
     })
   } 
 
-  handleFormChange() {
+  protected handleFormChange(): void {
     this.events.emit(`${this.container.name}Form:changed`, { 
       address: String(this._addressInput.value).trim(),
-      payment: this._activePaymentButton?.name ?? null
+      payment: this._activePaymentButton.name
     })
   }
 
-  private resetButtons() {
+  private resetButtons(): void {
     this._paymentButtons.forEach(button => {
       button.classList.remove('button_alt-active')
     })
@@ -74,11 +74,11 @@ export class OrderForm extends Form {
 
   formSubmit(e: Event): void {
     super.formSubmit(e)
-    this.events.emit(`${this.container.name}Form:submit`, { 
     // this.events.emit(`form:submit`, <OrderFormData>{ 
+    this.events.emit(`${this.container.name}Form:submit`, { 
       form: this.container,
       address: String(this._addressInput.value).trim(), 
-      payment: this._activePaymentButton.name as Payment
+      payment: this._activePaymentButton.name
     });
   }
 }
@@ -102,7 +102,7 @@ export class ContactsForm extends Form {
     });
   }
 
-  handleFormChange(): void {
+  protected handleFormChange(): void {
     this.events.emit(`${this.container.name}Form:changed`, { 
       email: String(this._emailInput.value).trim(),
       phone: String(this._phoneInput.value).trim(),

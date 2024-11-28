@@ -1,12 +1,14 @@
 export const API_URL = `${process.env.API_ORIGIN}/api/weblarek`;
 export const CDN_URL = `${process.env.API_ORIGIN}/content/weblarek`;
 
+export const currency = ' синапсов'
+
 export const endpoints = {
   productsGetUri: '/product',
   productPostUri: '/order',
 };
 
-export const phoneRegEx = /^\+(?:[0-9] ?){6,14}[0-9]$/
+export const phoneRegEx = /^\+?\d[\d\s()-]{8,20}$/
 export const emailRegEx = /^[^@]+@([^@.]+\.)+[^@.]+$/
 
 export enum CategorySelectors {

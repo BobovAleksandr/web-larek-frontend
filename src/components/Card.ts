@@ -1,12 +1,22 @@
 import { IProduct } from "../types";
-import { CategorySelectors, CDN_URL } from "../utils/constants";
+import { CategorySelectors, CDN_URL, currency } from "../utils/constants";
 import { ensureElement } from "../utils/utils";
 import { Component } from "./base/component";
 import { IEvents } from "./base/events";
 
-export const currency = ' синапсов'
+export interface ICard {
+  render(product: IProduct): HTMLElement;
+}
 
-abstract class Card extends Component {
+export interface ICardBasket extends ICard {
+  index: number;
+}
+
+export interface ICardPreview extends ICard {
+  changeButtonText(isInBasket: boolean): void;
+}
+
+abstract class Card extends Component implements ICard {
   protected _title: HTMLHeadElement;
   protected _price: HTMLSpanElement;
   protected _product: IProduct;
@@ -23,24 +33,16 @@ abstract class Card extends Component {
   }
 
   render(product: IProduct): HTMLElement {
-    this.product = product
+    this._product = product
     this._title.textContent = product.title;
-    this._price.textContent =  (product.price ?? '0') + currency;
+    this._price.textContent = (product.price ?? '0') + currency;
     const parentRender = super.render()
     return parentRender;
-  }
-
-  set product(product: IProduct) {
-    this._product = product
-  }
-
-  get product() {
-    return this._product
   }
 }
 
 // Карточка товара (корзина)
-export class CardBasket extends Card {
+export class CardBasket extends Card implements ICardBasket {
   protected _index: HTMLSpanElement;
   
   constructor(container: HTMLElement, events: IEvents) {
@@ -49,7 +51,7 @@ export class CardBasket extends Card {
     this._index = ensureElement<HTMLSpanElement>('.basket__item-index', this.container)
     this._button = ensureElement<HTMLButtonElement>(`.card__button`, this.container);
     this._button.addEventListener('click', () => {
-      this.events.emit('basketCardButton:pressed', this.product)
+      this.events.emit('basketCardButton:pressed', this._product)
     })
   }
 
@@ -64,7 +66,7 @@ export class CardBasket extends Card {
 }
 
 // Карточка товара (каталог)
-export class CardCatalog extends Card {
+export class CardCatalog extends Card implements ICard {
   constructor(container: HTMLElement, events: IEvents) {
     super(container, events)
 
@@ -87,7 +89,7 @@ export class CardCatalog extends Card {
 }
 
 // Карточка товара (превью)
-export class CardPreview extends CardCatalog {
+export class CardPreview extends CardCatalog implements ICardPreview {
   constructor(container: HTMLElement, events: IEvents) {
     super(container, events)
 
@@ -97,7 +99,7 @@ export class CardPreview extends CardCatalog {
     this._button = ensureElement<HTMLButtonElement>(`.card__button`, this.container);
     
     this._button.addEventListener('click', () => {
-      this.events.emit('cardPreviewButton:pressed', this.product)
+      this.events.emit('cardPreviewButton:pressed', this._product)
     })
   }
 
@@ -108,15 +110,9 @@ export class CardPreview extends CardCatalog {
 
   render(product: IProduct): HTMLElement {
     this._description.textContent = product.description;
-    if (!product.price) {
-      this.setDisabled(this._button, true)
-    } else {
-      this.setDisabled(this._button, false)
-    }
+    this.setDisabled(this._button, Boolean(!product.price))
     this._category.textContent = product.category;
     this._category.classList.add(`card__category_${CategorySelectors[product.category]}`)
-   
-    const parentRender = super.render(product)
-    return parentRender;
+    return super.render(product);
   }
 }

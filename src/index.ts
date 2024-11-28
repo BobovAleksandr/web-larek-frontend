@@ -190,7 +190,7 @@ events.on('sucсessButton:pressed', () => {
   app.clearAllData()
 })
 
-// Сброс заказа и корзины -> Закрытие модалки и сброс её контента
+// Сброс заказа и корзины -> Закрытие модалки, сброс её контента, сброс счётчика
 events.on('allData:cleared', (data: { basketProducts: number }) => {
   page.basketCounter = String(data.basketProducts)
   modal.close()

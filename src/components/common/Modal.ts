@@ -2,11 +2,7 @@ import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/component";
 import { IEvents } from "../base/events";
 
-interface IModal {
-  content: HTMLElement;
-}
-
-export class Modal extends Component implements IModal {
+export class Modal extends Component {
   protected _closeButton: HTMLButtonElement;
   protected _content: HTMLElement;
 
@@ -28,20 +24,20 @@ export class Modal extends Component implements IModal {
     this._content.replaceChildren(value);
   }
 
-  open() {
+  open(): void {
     this.container.classList.add('modal_active');
     this.events.emit('modal:open');
     document.addEventListener('keyup', this.handleEscUp);
   }
 
-  close() {
+  close(): void {
     this.container.classList.remove('modal_active');
     this.content = null;
     this.events.emit('modal:close');
     document.removeEventListener('keyup', this.handleEscUp);
   }
 
-  private handleEscUp = (evt: KeyboardEvent) => {
+  private handleEscUp = (evt: KeyboardEvent): void => {
     if (evt.key === 'Escape') {
       this.close();
     }

@@ -1,13 +1,8 @@
 import { ensureElement } from "../utils/utils";
 import { Component } from "./base/component";
-
 import { IEvents } from "./base/events";
 
-interface IPage {
-  basketCounter: string;
-}
-
-export class Page extends Component implements IPage {
+export class Page extends Component {
   protected _basketButton: HTMLButtonElement;
   protected _basketCounter: HTMLSpanElement;
   protected _cardsGallery: HTMLElement;
@@ -30,11 +25,12 @@ export class Page extends Component implements IPage {
     this._basketCounter.textContent = value
   }
 
-  setCatalog(items: HTMLElement[]) {
+  // TODO в параметрах интерфейс Card
+  setCatalog(items: HTMLElement[]): void {
     this._cardsGallery.replaceChildren(...items)
   }   
 
-  lockPage(value: boolean) {
+  lockPage(value: boolean): void {
     const method = value ? 'add' : 'remove'
     this._wrapper.classList[method]('page__wrapper_locked')
   }

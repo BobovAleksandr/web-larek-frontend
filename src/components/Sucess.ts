@@ -1,7 +1,7 @@
 import { ensureElement } from "../utils/utils";
 import { Component } from "./base/component";
 import { IEvents } from "./base/events";
-import { currency } from "./Card";
+import { currency } from "../utils/constants";
 
 export class Success extends Component {
 	protected _sucessButton: HTMLButtonElement;
