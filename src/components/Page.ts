@@ -1,5 +1,5 @@
 import { ensureElement } from "../utils/utils";
-import { Component } from "./base/component";
+import { Component } from "./base/Component";
 import { IEvents } from "./base/events";
 
 export class Page extends Component {
@@ -25,7 +25,6 @@ export class Page extends Component {
     this._basketCounter.textContent = value
   }
 
-  // TODO в параметрах интерфейс Card
   setCatalog(items: HTMLElement[]): void {
     this._cardsGallery.replaceChildren(...items)
   }   

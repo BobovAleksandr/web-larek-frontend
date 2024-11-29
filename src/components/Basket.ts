@@ -1,9 +1,9 @@
 import { ensureElement } from "../utils/utils";
-import { Component } from "./base/component";
+import { Component } from "./base/Component";
 import { IEvents } from "./base/events";
 import { currency } from "../utils/constants";
 
-export class Basket extends Component {
+export class BasketComponent extends Component {
   protected _title: HTMLHeadElement;
   protected _content: HTMLUListElement;
   protected _button: HTMLButtonElement;
@@ -12,10 +12,10 @@ export class Basket extends Component {
   constructor(container: HTMLElement, events: IEvents) {
     super(container, events)
 
-    this._content = ensureElement<HTMLUListElement>('.basket__list', container)
-    this._title = ensureElement<HTMLHeadElement>('.modal__title', container)
-    this._price = ensureElement<HTMLSpanElement>('.basket__price', container)
-    this._button = ensureElement<HTMLButtonElement>('.basket__button', container)
+    this._content = ensureElement<HTMLUListElement>('.basket__list', this.container)
+    this._title = ensureElement<HTMLHeadElement>('.modal__title', this.container)
+    this._price = ensureElement<HTMLSpanElement>('.basket__price', this.container)
+    this._button = ensureElement<HTMLButtonElement>('.basket__button', this.container)
 
     this._button.addEventListener('click', () => {
       events.emit('basket:submit', this)
@@ -30,7 +30,7 @@ export class Basket extends Component {
     this._price.textContent = String(value) + currency
   }
 
-  toggleButtonState(isBasketPositive: boolean) {
+  toggleButtonState(isBasketPositive: boolean): void {
     this.setDisabled(this._button, !isBasketPositive)
   }
 }
