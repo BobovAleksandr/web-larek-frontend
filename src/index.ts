@@ -1,7 +1,7 @@
 import './scss/styles.scss';
 import { Api, ApiListResponse } from './components/base/api';
 import { API_URL, templates, endpoints } from './utils/constants';
-import { Basket, Order, ProductList, Validator } from './components/AppState';
+import { Basket, Order, ProductList, Validator } from './components/App';
 import { EventEmitter } from './components/base/events';
 import { ContactsFormData, IOrder, IProduct, OrderFormData } from './types';
 import { Page } from './components/Page';
@@ -28,14 +28,14 @@ const orderForm = new OrderForm(cloneTemplate(templates.orderTemplate), events);
 const contactsForm = new ContactsForm(cloneTemplate(templates.contactsTemplate), events)
 const success = new Success(cloneTemplate(templates.successTemplate), events)
 
-// Запрос товаров с сервера -> Запись массива товаров в модель
+// Запрос товаров с сервера -> Сохранение массива товаров
 api.get(endpoints.productsGetUri)
   .then((products: ApiListResponse<IProduct>) => {
     productList.setCatalog(products.items);
   })
   .catch((error) => { console.error(error) });
 
-// Изменение массива товаров -> Рендер карточек на страницу
+// Сохранение массива товаров -> Рендер карточек товаров на страницу
 events.on('catalog:changed', (products: IProduct[]) => {
   const cards: HTMLElement[] = [];
   products.forEach(product => {
@@ -50,20 +50,19 @@ events.on('catalogCard:pressed', (product: IProduct) => {
   productList.selectedProduct = product;
 })
 
-// Продукт выбран -> Рендер карточки, открытие модального окна, проверка кнопки "Купить"
+// Продукт выбран -> Рендер карточки товара, открытие модального окна, изменение состояния кнопки "Купить"
 events.on('product:selected', (data: { product: IProduct }) => {
   modal.content = cardPreview.render(data.product);
   modal.render();
-  // TODO - переписать смену кнопки карточки
   cardPreview.changeButtonText(basket.isProductInBasket(data.product))
 })
 
-// Нажатие кнопки добавления / удаления товара в карточке preview -> Изменение корзины
+// Нажатие кнопки добавления / удаления товара в карточке товара -> Изменение корзины
 events.on('cardPreviewButton:pressed', (product: IProduct) => {
   basket.toggleBasketProduct(product)
 })
 
-// Добавление / удаление товара из корзины (в карточке) -> Смена кнопки "Купить" в карточке товара, смена счетчика корзины
+// Изменение корзины (при просмотре карточки) -> Изменение состояния кнопки "Купить"
 events.on('card:productChanged', (data: { isProductInBasket: boolean} ) => {
   if (productList.selectedProduct) {
     cardPreview.changeButtonText(data.isProductInBasket);
@@ -75,24 +74,25 @@ events.on('basketAmount:Changed', (data: { amount: number }) => {
   page.basketCounter = String(data.amount);
 })
 
-// Удаление товара из корзины (в модальном окне корзины) -> Изменение списка товаров в корзине
+// Удаление товара из корзины (при просмотре корзины) -> Изменение корзины
 events.on('basketCardButton:pressed', (product: IProduct) => {
   basket.toggleBasketProduct(product)
 })
 
-// нажатие на кнопку корзины -> Инициализация корзины
+// Нажатие на кнопку корзины -> Инициализация корзины
 events.on('basketIcon:pressed', () => {
   basket.basketInit()
 })
 
-// Открытие корзины -> Рендер компонента корзины
-events.on('basket:open', (data: { isBasketPositive: boolean }) => {
+// Открытие корзины -> Рендер элемента корзины, изменение состояния кнопки "Оформить"
+events.on('basket:init', (data: { isBasketPositive: boolean }) => {
   modal.render();
   modal.content = basketComponent.render();
   basketComponent.toggleButtonState(data.isBasketPositive)
+  
 })
 
-// Изменение корзины -> Ререндер корзины 
+// Изменение корзины -> Ререндер корзины
 events.on('basket:changed', (data: { products: IProduct[], totalBasketPrice: number, isBasketPositive: boolean }) => {
   const basketCards: HTMLElement[] = [];
   data.products.forEach((product: IProduct) => {
@@ -105,7 +105,7 @@ events.on('basket:changed', (data: { products: IProduct[], totalBasketPrice: num
   basketComponent.totalPrice = data.totalBasketPrice;
 })
 
-// Открытие модального окна -> Блокировка скролла
+// Открытие модального окна -> Блокировка скролла страницы
 events.on('modal:open', () => {
   page.lockPage(true);
 })
@@ -116,32 +116,30 @@ events.on('modal:close', () => {
   page.lockPage(false);
 })
 
-// Нажатие "Оформить" в корзине -> Создание заказа, перенос товаров в заказ, обнуление выбранного товара
+// Нажатие "Оформить" в корзине -> Перенос товаров в заказ, сброс выбранного товара
 events.on('basket:submit', () => {
-  order.basketData = {
-    items: basket.products, 
-    total: basket.products.reduce((sum, product) => sum + product.price, 0)
-  };
+  order.basketData = { items: basket.products };
+  if (productList.selectedProduct) { productList.selectedProduct = null };
 })
 
-// Создание заказа -> Рендер формы со способом оплаты и адресом
+// Запись данных о товаре в заказ -> Рендер формы со способом оплаты и адресом
 events.on('basketData:changed', () => {
   modal.content = orderForm.render();
   modal.render();
 })
 
-// Изменения в полях формы со способом оплаты и адресом -> вызов проверки валидации формы
+// Изменения в полях формы со способом оплаты и адресом -> Вызов проверки валидации формы
 events.on('orderForm:changed', (data: OrderFormData) => {
   validator.checkOrderForm(data);
 })
 
-// Проверка валидации формы со способом оплаты и адресом -> Смена текста ошибки формы, смена блокировки кнопки сабмита
+// Проверка валидации формы со способом оплаты и адресом -> Смена текста ошибки формы, изменение состояния кнопки сабмита
 events.on('orderForm:checked', (data: { status: boolean, error: string }) => {
   orderForm.valid = data.status;
   orderForm.errors = data.error;
 })
 
-// Сабмит формы со способом оплаты и адресом -> Запись данных из формы в модель
+// Сабмит формы со способом оплаты и адресом -> Запись данных из формы в заказ
 events.on('orderForm:submit', (data: OrderFormData) => {
   order.orderData = {
     payment: data.payment,
@@ -155,18 +153,18 @@ events.on('orderFormData:changed', () => {
   modal.render();
 })
 
-// Изменения в полях формы формы с email и телефоном -> вызов проверки валидации формы
+// Изменения в полях формы формы с email и телефоном -> Вызов проверки валидации формы
 events.on('contactsForm:changed', (data: ContactsFormData) => {
   validator.checkContactsFormValid(data)
 })
 
-// Проверка валидации формы формы с email и телефоном -> Смена текста ошибки формы, смена блок кнопки сабмита
+// Проверка валидации формы формы с email и телефоном -> Смена текста ошибки формы, изменение состояния кнопки сабмита
 events.on('contactsForm:checked', (data: { status: boolean, error: string }) => {
   contactsForm.valid = data.status;
   contactsForm.errors = data.error;
 })
 
-// Сабмит формы формы с email и телефоном -> Запись данных из формы в модель
+// Сабмит формы с email и телефоном -> Запись данных из формы в заказ
 events.on('contactsForm:submit', (data: ContactsFormData) => {
   order.contactsData = {
     email: data.email,
@@ -176,7 +174,7 @@ events.on('contactsForm:submit', (data: ContactsFormData) => {
 
 // Изменение данных email и телефона -> Отправка заказа
 events.on('contactsData:changed', (order: IOrder) => {
-  contactsForm.errors = 'Отправка заказа'
+  contactsForm.errors = 'Отправка заказа...'
   api.post(endpoints.productPostUri, order)
     .then((response: { id: string, total: number }) => events.emit('order:sent', response))
     .catch((data: { error: string }) => events.emit('order:error', data))
@@ -188,20 +186,20 @@ events.on('order:error', (data: { error: string }) => {
   contactsForm.errors = data.error
 })
 
-// Заказ отправлен на сервер -> Рендер модалки с "успехом"
+// Заказ отправлен на сервер -> Рендер модального окна со статусом отправки, сброс заказа и корзины из модели
 events.on('order:sent', (response: { id: string, total: number }) => {
   modal.content = success.render({ value: response.total });
   modal.render();
   basket.clearBasket()
-  order.cleaerOrder()
+  order.clearOrder()
 })
 
-// Нажатие кнопки успеха -> Сброс заказа и корзины из модели
+// Нажатие кнопки модального окна статуса отправки -> Закрытие модального окна
 events.on('sucсessButton:pressed', () => {
   modal.close()
 })
 
-// Сброс заказа и корзины -> Закрытие модалки, сброс её контента, сброс счётчика
+// Сброс заказа и корзины -> Сброс счётчика корзины
 events.on('basket:cleared', (data: { basketProducts: number }) => {
   page.basketCounter = String(data.basketProducts)
 })

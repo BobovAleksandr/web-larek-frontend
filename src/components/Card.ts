@@ -4,19 +4,7 @@ import { ensureElement } from "../utils/utils";
 import { Component } from "./base/component";
 import { IEvents } from "./base/events";
 
-export interface ICard {
-  render(product: IProduct): HTMLElement;
-}
-
-export interface ICardBasket extends ICard {
-  index: number;
-}
-
-export interface ICardPreview extends ICard {
-  changeButtonText(isInBasket: boolean): void;
-}
-
-abstract class Card extends Component implements ICard {
+abstract class Card extends Component {
   protected _title: HTMLHeadElement;
   protected _price: HTMLSpanElement;
   protected _product: IProduct;
@@ -36,13 +24,12 @@ abstract class Card extends Component implements ICard {
     this._product = product
     this._title.textContent = product.title;
     this._price.textContent = (product.price ?? '0') + currency;
-    const parentRender = super.render()
-    return parentRender;
+    return super.render()
   }
 }
 
 // Карточка товара (корзина)
-export class CardBasket extends Card implements ICardBasket {
+export class CardBasket extends Card {
   protected _index: HTMLSpanElement;
   
   constructor(container: HTMLElement, events: IEvents) {
@@ -58,15 +45,10 @@ export class CardBasket extends Card implements ICardBasket {
   set index(value: number) {
     this._index.textContent = String(value)
   }
-
-  render(product: IProduct): HTMLElement {
-    const parentRender = super.render(product)
-    return parentRender;
-  }
 }
 
 // Карточка товара (каталог)
-export class CardCatalog extends Card implements ICard {
+export class CardCatalog extends Card {
   constructor(container: HTMLElement, events: IEvents) {
     super(container, events)
 
@@ -83,13 +65,12 @@ export class CardCatalog extends Card implements ICard {
       this.events.emit('catalogCard:pressed', product)
     })
 
-    const parentRender = super.render(product)
-    return parentRender;
+    return super.render(product)
   }
 }
 
 // Карточка товара (превью)
-export class CardPreview extends CardCatalog implements ICardPreview {
+export class CardPreview extends CardCatalog {
   constructor(container: HTMLElement, events: IEvents) {
     super(container, events)
 
