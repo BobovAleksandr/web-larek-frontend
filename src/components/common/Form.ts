@@ -1,6 +1,6 @@
-import { OrderFormData, Payment } from "../../types";
+import { ContactsFormData, OrderFormData } from "../../types";
 import { ensureAllElements, ensureElement } from "../../utils/utils";
-import { Component } from "../base/Component";
+import { Component } from "../base/component";
 import { IEvents } from "../base/events";
 
 export abstract class Form extends Component {
@@ -42,7 +42,7 @@ export class OrderForm extends Form {
   protected _addressInput: HTMLInputElement;
   protected _activePaymentButton: HTMLButtonElement = null;
 
-  constructor(protected container: HTMLFormElement, events: IEvents) {
+  constructor(container: HTMLFormElement, events: IEvents) {
     super(container, events)
 
     this._addressInput = ensureElement<HTMLInputElement>('input[name="address"]', this.container)
@@ -61,9 +61,8 @@ export class OrderForm extends Form {
 
   protected handleFormChange(): void {
     this.events.emit(`${this.container.name}Form:changed`, <OrderFormData>{
-      form: this.container, 
-      address: String(this._addressInput.value).trim(),
-      payment: this._activePaymentButton.name
+      address: this._addressInput.value.trim(),
+      payment: this._activePaymentButton?.name ?? null
     })
   }
 
@@ -75,10 +74,8 @@ export class OrderForm extends Form {
 
   formSubmit(e: Event): void {
     super.formSubmit(e)
-    // this.events.emit(`form:submit`, <OrderFormData>{ 
     this.events.emit(`${this.container.name}Form:submit`, { 
-      form: this.container,
-      address: String(this._addressInput.value).trim(), 
+      address: this._addressInput.value.trim(), 
       payment: this._activePaymentButton.name
     });
   }
@@ -88,7 +85,7 @@ export class ContactsForm extends Form {
   protected _emailInput: HTMLInputElement;
   protected _phoneInput: HTMLInputElement;
 
-  constructor(protected container: HTMLFormElement, events: IEvents) {
+  constructor(container: HTMLFormElement, events: IEvents) {
     super(container, events)
 
     this._emailInput = ensureElement<HTMLInputElement>('input[name="email"]', this.container)
@@ -104,9 +101,9 @@ export class ContactsForm extends Form {
   }
 
   protected handleFormChange(): void {
-    this.events.emit(`${this.container.name}Form:changed`, { 
-      email: String(this._emailInput.value).trim(),
-      phone: String(this._phoneInput.value).trim(),
+    this.events.emit(`${this.container.name}Form:changed`, <ContactsFormData>{
+      email: this._emailInput.value.trim(),
+      phone: this._phoneInput.value.trim(),
     })
   }
 }

@@ -55,28 +55,10 @@ export class Basket {
       this.basketInit()
     } else {
       this._basketProducts.push(product)
-      this.events.emit('card:productChanged', {
-        isProductInBasket: this.isProductInBasket(product),
-        productsAmount: this._basketProducts.length
-      })
+      this.events.emit('card:productChanged', { isProductInBasket: this.isProductInBasket(product) })
     }
+    this.events.emit('basketAmount:Changed', { amount: this._basketProducts.length })
   }
-
-  toggleBasketProduct_BACKUP(product: IProduct): void {
-    if (this._basketProducts.includes(product)) {
-      this._basketProducts = this._basketProducts.filter(item => item.id !== product.id)
-      if (this._selectedProduct) {
-        this.events.emit('card:productChanged', {isProductInBasket: this.isProductInBasket(product)})
-      } else {
-        this.basketInit()
-      }
-    } else {
-      this._basketProducts.push(product)
-      this.events.emit('card:productChanged', {isProductInBasket: this.isProductInBasket(product)})
-    }
-    this.events.emit('basket:amountChanged', { value: String(this._basketProducts.length) })
-  }
-
   
   
   isProductInBasket(product: IProduct): boolean {
@@ -87,15 +69,9 @@ export class Basket {
     return this._basketProducts.reduce((sum, product) => sum + product.price, 0)
   }
 
-  clearAllData(): void {
+  clearBasket(): void {
     this._basketProducts.length = 0
-    this._order.payment = null;
-    this._order.email = '';
-    this._order.phone = '';
-    this._order.address = '';
-    this._order.total = 0;
-    this._order.items = [];
-    this.events.emit('allData:cleared', { basketProducts: this._basketProducts.length })
+    this.events.emit('basket:cleared', { basketProducts: this._basketProducts.length })
   }
 }
 
@@ -113,28 +89,31 @@ export class Order {
     this.events = events
   }
 
-  set items(items: IProduct[]) {
-    this._order.items = items.map(item => item.id)
+  set basketData(data: { items: IProduct[], total: number }) {
+    this._order.items = data.items.map(item => item.id);
+    this._order.total = data.total;
+    this.events.emit('basketData:changed')
   }
 
-  set payment(value: Payment) {
-    this._order.payment = value
+  set orderData(data: { payment: Payment, address: string }) {
+    this._order.payment = data.payment;
+    this._order.address = data.address;
+    this.events.emit('orderFormData:changed');
   }
 
-  set total(value: number) {
-    this._order.total = value
+  set contactsData(data: { phone: string, email: string }) {
+    this._order.phone = data.phone
+    this._order.email = data.email
+    this.events.emit('contactsData:changed', this._order)
   }
 
-  set address(value: string) {
-    this._order.address = value
-  }
-
-  set phone(value: string) {
-    this._order.phone = value
-  }
-
-  set email(value: string) {
-    this._order.email = value
+  cleaerOrder(): void {
+    this._order.items.length = 0
+    this._order.payment = null
+    this._order.address = ''
+    this._order.email = ''
+    this._order.phone = ''
+    this._order.total = 0
   }
 }
 
@@ -144,7 +123,7 @@ export class Validator {
     this.events = events
   }
 
-  checkOrderFormValid(data: OrderFormData): void {
+  checkOrderForm(data: OrderFormData): void {
     const validity: { status: boolean, error: string } = {
       status: false,
       error: ''
@@ -164,12 +143,11 @@ export class Validator {
     this.events.emit('orderForm:checked', validity)
   }
   
-  checkContactsFormValid(data: ContactsFormData) {
+  checkContactsFormValid(data: ContactsFormData): void {
     const validity: { status: boolean, error: string } = {
       status: false,
       error: ''
     }
-  
     if (!data.phone && !data.email) {
       validity.error = 'Заполните необходимые поля'
     }
@@ -189,27 +167,10 @@ export class Validator {
       validity.error = ''
     }
     this.events.emit('contactsForm:checked', validity)
-  }
-
-  isValid<T>(data: T): validityState {
-    const currentError: string = ''
-    const currentValidState: boolean = false
-    
-    console.log(data.address)
-
-    return {
-      error: currentError,
-      isValid: currentValidState,
-    }
-  }
-
-
+  }  
 }
 
-type validityState = {
-  error: string,
-  isValid: boolean
-}
+
 
 
 

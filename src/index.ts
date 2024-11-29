@@ -64,11 +64,15 @@ events.on('cardPreviewButton:pressed', (product: IProduct) => {
 })
 
 // Добавление / удаление товара из корзины (в карточке) -> Смена кнопки "Купить" в карточке товара, смена счетчика корзины
-events.on('card:productChanged', (data: { isProductInBasket: boolean, productsAmount: number }) => {
+events.on('card:productChanged', (data: { isProductInBasket: boolean} ) => {
   if (productList.selectedProduct) {
     cardPreview.changeButtonText(data.isProductInBasket);
   }
-  page.basketCounter = String(data.productsAmount);
+})
+
+// Имзенение корзины -> Изменение счетчика корзины
+events.on('basketAmount:Changed', (data: { amount: number }) => {
+  page.basketCounter = String(data.amount);
 })
 
 // Удаление товара из корзины (в модальном окне корзины) -> Изменение списка товаров в корзине
@@ -114,73 +118,69 @@ events.on('modal:close', () => {
 
 // Нажатие "Оформить" в корзине -> Создание заказа, перенос товаров в заказ, обнуление выбранного товара
 events.on('basket:submit', () => {
-  order.items = basket.products;
-  order.total = basket.products.reduce((sum, product) => sum + product.price, 0)
-  events.trigger('orderProductsData:changed')
+  order.basketData = {
+    items: basket.products, 
+    total: basket.products.reduce((sum, product) => sum + product.price, 0)
+  };
 })
 
-// TODO Переименовать и переделать описание
 // Создание заказа -> Рендер формы со способом оплаты и адресом
-events.on('orderProductsData:changed', () => {
-  modal.content = orderForm.render()
+events.on('basketData:changed', () => {
+  modal.content = orderForm.render();
   modal.render();
 })
 
-
-
-
-
 // Изменения в полях формы со способом оплаты и адресом -> вызов проверки валидации формы
-events.on('orderForm:changed', <T>(data: T) => {
-  validator.isValid<T>(data)
+events.on('orderForm:changed', (data: OrderFormData) => {
+  validator.checkOrderForm(data);
 })
 
-// Проверка валидации формы со способом оплаты и адресом -> смена текста ошибки формы, смена блокировки кнопки сабмита
+// Проверка валидации формы со способом оплаты и адресом -> Смена текста ошибки формы, смена блокировки кнопки сабмита
 events.on('orderForm:checked', (data: { status: boolean, error: string }) => {
-  orderForm.valid = data.status
-  orderForm.errors = data.error
+  orderForm.valid = data.status;
+  orderForm.errors = data.error;
 })
 
-// TODO Соединить сабмиты
 // Сабмит формы со способом оплаты и адресом -> Запись данных из формы в модель
 events.on('orderForm:submit', (data: OrderFormData) => {
-  app.orderFormData = data
+  order.orderData = {
+    payment: data.payment,
+    address: data.address
+  };
 })
 
 // Изменение данных со способом оплаты и адресом -> Рендер формы с email и телефоном
-events.on('orderData:changed', () => {
-  modal.content = contactsForm.render()
+events.on('orderFormData:changed', () => {
+  modal.content = contactsForm.render();
   modal.render();
 })
 
 // Изменения в полях формы формы с email и телефоном -> вызов проверки валидации формы
 events.on('contactsForm:changed', (data: ContactsFormData) => {
-  app.checkContactsFormValid(data)
+  validator.checkContactsFormValid(data)
 })
 
 // Проверка валидации формы формы с email и телефоном -> Смена текста ошибки формы, смена блок кнопки сабмита
 events.on('contactsForm:checked', (data: { status: boolean, error: string }) => {
-  contactsForm.valid = data.status
-  contactsForm.errors = data.error
+  contactsForm.valid = data.status;
+  contactsForm.errors = data.error;
 })
 
-// TODO сабмиты объеденить
 // Сабмит формы формы с email и телефоном -> Запись данных из формы в модель
 events.on('contactsForm:submit', (data: ContactsFormData) => {
-  app.contactsFormData = data
-})
-
-// TODO тестовый метод
-events.on('form:submit', <T extends object>(data: T) => {
-  app.contactsFormData = data
+  order.contactsData = {
+    email: data.email,
+    phone: data.phone
+  };
 })
 
 // Изменение данных email и телефона -> Отправка заказа
 events.on('contactsData:changed', (order: IOrder) => {
-  // TODO текст "Ожидание загрузки"
+  contactsForm.errors = 'Отправка заказа'
   api.post(endpoints.productPostUri, order)
     .then((response: { id: string, total: number }) => events.emit('order:sent', response))
     .catch((data: { error: string }) => events.emit('order:error', data))
+    .finally(() => contactsForm.errors = '')
 })
 
 // Ошибка отправки заказа -> Показ текста ошибки
@@ -190,17 +190,18 @@ events.on('order:error', (data: { error: string }) => {
 
 // Заказ отправлен на сервер -> Рендер модалки с "успехом"
 events.on('order:sent', (response: { id: string, total: number }) => {
-  modal.content = success.render({ value: response.total })
+  modal.content = success.render({ value: response.total });
   modal.render();
+  basket.clearBasket()
+  order.cleaerOrder()
 })
 
 // Нажатие кнопки успеха -> Сброс заказа и корзины из модели
 events.on('sucсessButton:pressed', () => {
-  app.clearAllData()
+  modal.close()
 })
 
 // Сброс заказа и корзины -> Закрытие модалки, сброс её контента, сброс счётчика
-events.on('allData:cleared', (data: { basketProducts: number }) => {
+events.on('basket:cleared', (data: { basketProducts: number }) => {
   page.basketCounter = String(data.basketProducts)
-  modal.close()
 })

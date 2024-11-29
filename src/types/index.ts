@@ -3,13 +3,11 @@ export type Payment = 'card' | 'cash'
 export type Category = 'софт-скил' | 'другое' | 'дополнительное' | 'кнопка' | 'хард-скил'
 
 export type OrderFormData = {
-  form: HTMLFormElement;
   address: string;
   payment: Payment;
 }
 
 export type ContactsFormData = {
-  form: HTMLFormElement;
   phone: string;
   email: string;
 }
