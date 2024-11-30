@@ -38,3 +38,32 @@ export const templates: ITemplates = {
   orderTemplate: document.querySelector('#order'),
   contactsTemplate: document.querySelector('#contacts'),
 }
+
+export const events = {
+  catalogChanged: 'catalog:changed',
+  catalogPressed: 'catalogCard:pressed',
+  productSelected: 'product:selected',
+  cardPreviewButtonPressed: 'cardPreviewButton:pressed',
+  cardProductChanged: 'card:productChanged',
+  basketAmountChanged: 'basketAmount:Changed',
+  basketCardButtonPressed: 'basketCardButton:pressed',
+  basketIconPressed: 'basketIcon:pressed',
+  basketInit: 'basket:init',
+  basketChanged: 'basket:changed',
+  modalOpen: 'modal:open',
+  modalClose: 'modal:close',
+  basketSubmit: 'basket:submit',
+  baskeetDataChanged: 'basketData:changed',
+  orderFormChanged: 'orderForm:changed',
+  orderFormChecked: 'orderForm:checked',
+  orderFormSubmit: 'orderForm:submit',
+  orderFormDataChanged: 'orderFormData:changed',
+  contactsFormChanged: 'contactsForm:changed',
+  contactsFormChecked: 'contactsForm:checked',
+  contactsFormSubmit: 'contactsForm:submit',
+  contactsFormDataChanged: 'contactsData:changed',
+  orderError: 'order:error',
+  orderSent: 'order:sent',
+  successButtonPressed: 'sucсessButton:pressed',
+  basketCleared: 'basket:cleared'
+}

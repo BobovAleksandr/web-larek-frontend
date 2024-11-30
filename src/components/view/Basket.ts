@@ -1,9 +1,9 @@
-import { ensureElement } from "../utils/utils";
-import { Component } from "./base/component";
-import { IEvents } from "./base/events";
-import { currency } from "../utils/constants";
+import { ensureElement } from "../../utils/utils";
+import { Component } from "./common/Component";
+import { IEvents } from "../base/events";
+import { currency } from "../../utils/constants";
 
-export class BasketComponent extends Component {
+export class BasketElement extends Component {
   protected _title: HTMLHeadElement;
   protected _content: HTMLUListElement;
   protected _button: HTMLButtonElement;

@@ -1,5 +1,5 @@
-import { IEvents } from "./events";
-import { cloneTemplate } from "../../utils/utils";
+import { IEvents } from "../../base/events";
+import { cloneTemplate } from "../../../utils/utils";
 
 export abstract class Component {
   

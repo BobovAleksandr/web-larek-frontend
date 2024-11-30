@@ -1,7 +1,7 @@
-import { ContactsFormData, OrderFormData } from "../../types";
-import { ensureAllElements, ensureElement } from "../../utils/utils";
-import { Component } from "../base/component";
-import { IEvents } from "../base/events";
+import { ContactsFormData, OrderFormData } from "../../../types";
+import { ensureAllElements, ensureElement } from "../../../utils/utils";
+import { Component } from "./Component";
+import { IEvents } from "../../base/events";
 
 export abstract class Form extends Component {
   protected _inputs: HTMLInputElement[];

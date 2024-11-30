@@ -1,6 +1,6 @@
-import { ensureElement } from "../utils/utils";
-import { Component } from "./base/component";
-import { IEvents } from "./base/events";
+import { ensureElement } from "../../utils/utils";
+import { Component } from "./common/Component";
+import { IEvents } from "../base/events";
 
 export class Page extends Component {
   protected _basketButton: HTMLButtonElement;
